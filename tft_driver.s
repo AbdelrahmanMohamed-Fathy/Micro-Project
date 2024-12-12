@@ -46,7 +46,7 @@ LCD_INIT FUNCTION
 	;Even tho there are so many more in the DataSheet
 
 	;TODO: PUSH ANY NEEDED REGISTERS
-	push {R0-R12,LR}
+	push {R0-R10,LR}
 
 	;;;;;;;;;;;;;;;;; HARDWARE RESET (putting RST to high then low then high again) ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;TODO: SET RESET PIN TO HIGH
@@ -147,9 +147,17 @@ LCD_INIT FUNCTION
 	;TODO: ISSUE MEMORY WRITE COMMAND
 	mov r2,#0x2c
 	bl LCD_COMMAND_WRITE
+	
+	
+	mov r1, #0
+	mov r2, #0
+	mov r3, #480
+	mov r4, #320
+	mov r10, #BLACK
+	bl DRAW_RECTANGLE_FILLED
 		
 	;TODO: POP ALL PUSHED REGISTERS
-	pop{r0-r12,pc}
+	pop{r0-r10,pc}
 	ENDFUNC
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
