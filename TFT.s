@@ -15,6 +15,19 @@ TFT_RST EQU 11
 TFT_CS EQU 10
 TFT_RS EQU 9
 TFT_WR EQU 8
+	
+;just some color codes, 16-bit colors coded in RGB 565
+BLACK	EQU   	0x0000
+BLUE 	EQU  	0x001F
+RED  	EQU  	0xF800
+RED2   	EQU 	0x4000
+GREEN 	EQU  	0x07E0
+CYAN  	EQU  	0x07FF
+MAGENTA EQU 	0xF81F
+YELLOW	EQU  	0xFFE0
+WHITE 	EQU  	0xFFFF
+GREEN2 	EQU 	0x2FA4
+CYAN2 	EQU  	0x07FF
 
 
 	IMPORT DELAY
@@ -245,7 +258,7 @@ DRAW_RECTANGLE_FILLED FUNCTION
 	;COLOR = [] r10
 	push {r0-r12, LR}
 	
-	mov r5, r0; X1
+	mov r5, r0;X1
 	mov r6, r3;X2
 	mov r7, r1;Y1
 	mov r8, r4;Y2
@@ -256,11 +269,12 @@ DRAW_RECTANGLE_FILLED FUNCTION
 	mov r4, r8
 	BL ADDRESS_SET
 
-	sub r1, r1, r0
-	sub r4, r4, r3
+	subs r1, r1, r0
+	moveq r1,#1
+	subs r4, r4, r3
+	moveq r4,#1
 	
 	mul r1, r1, r4 ; area in r1
-
 
 colour_send_loop
 	MOV R2,R10,LSR #8
@@ -284,7 +298,7 @@ LCD_WRITE
 	;arguments: R2 = data to be written to the D0-7 bus
 
 	;TODO: PUSH THE NEEDED REGISTERS TO SAVE THEIR CONTENTS. HINT: Push any register you will modify inside the function, and LR 
-	push {R0-R12,LR}
+	push {R0-R3,LR}
 	
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SETTING WR to 0 ;;;;;;;;;;;;;;;;;;;;;
 	;TODO: RESET WR TO 0
@@ -295,13 +309,8 @@ LCD_WRITE
 	;;;;;;;;;;;;; HERE YOU PUT YOUR DATA which is in R2 TO PE0-7 ;;;;;;;;;;;;;;;;;
 	;TODO: SET PE0-7 WITH THE LOWER 8-bits of R2
 	;only write the lower byte to PE0-7
-	;LDR R0,=TFT_BUS
-	;LDR R1,[R0]
-	;ORR R1,R1,R3
-	;STR R1,[R0]
 	LDR R0,=TFT_BUS
 	LDR R1, [R0]
-	;MOV R1, R3
 	AND R1,R1,#0xFFFFFF00
 	AND R3,R3,#0x0FF
 	ORR R1,R1,R3
@@ -315,7 +324,7 @@ LCD_WRITE
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	;TODO: POP THE REGISTERS YOU JUST PUSHED, and PC
-	pop {R0-R12,PC}
+	pop {R0-R3,PC}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ADDRESS_SET
@@ -329,8 +338,8 @@ ADDRESS_SET
 	;R4 = Y2
 
 	;PUSHING ANY NEEDED REGISTERS
-	PUSH {R0-R12, LR}
-
+	PUSH {R0-R4, LR}
+	
 	;COLUMN ADDRESS SET | DATASHEET PAGE 110
 	MOV R2, #0x2A
 	BL LCD_COMMAND_WRITE
@@ -376,21 +385,21 @@ ADDRESS_SET
 	BL LCD_COMMAND_WRITE
 
 	;POPPING ALL REGISTERS I PUSHED
-	POP {R0-R12, PC}
+	POP {R0-R4, PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 set_pin ; pin location in r2
-	PUSH {R0-R12, LR}
+	PUSH {R0-R3, LR}
 	LDR R0, =TFT_BUS
 	LDR R1, [R0]
 	MOV R3, #1
 	LSL R3, R3, R2
 	ORR R1, R3, R1
 	STR R1, [R0]
-	POP {R0-R12, PC}
+	POP {R0-R3, PC}
 
 reset_pin
-	PUSH {R0-R12, LR}
+	PUSH {R0-R3, LR}
 	LDR R0, =TFT_BUS
 	LDR R1, [R0]
 	MOV R3, #1
@@ -398,7 +407,7 @@ reset_pin
 	MVN R3, R3
 	AND R1, R1, R3
 	STR R1, [R0]
-	POP {R0-R12, PC}
+	POP {R0-R3, PC}
 
 
 	END
