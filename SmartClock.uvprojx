@@ -399,6 +399,11 @@
               <FileType>2</FileType>
               <FilePath>.\tft_driver.s</FilePath>
             </File>
+            <File>
+              <FileName>font.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\font.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
