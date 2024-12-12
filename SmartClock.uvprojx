@@ -390,14 +390,14 @@
               <FilePath>.\main.s</FilePath>
             </File>
             <File>
-              <FileName>tft.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\tft.s</FilePath>
-            </File>
-            <File>
               <FileName>util.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\util.s</FilePath>
+            </File>
+            <File>
+              <FileName>tft_driver.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\tft_driver.s</FilePath>
             </File>
           </Files>
         </Group>

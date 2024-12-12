@@ -201,8 +201,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\tft.s</PathWithFileName>
-      <FilenameWithoutPath>tft.s</FilenameWithoutPath>
+      <PathWithFileName>.\util.s</PathWithFileName>
+      <FilenameWithoutPath>util.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -213,8 +213,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\util.s</PathWithFileName>
-      <FilenameWithoutPath>util.s</FilenameWithoutPath>
+      <PathWithFileName>.\tft_driver.s</PathWithFileName>
+      <FilenameWithoutPath>tft_driver.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
