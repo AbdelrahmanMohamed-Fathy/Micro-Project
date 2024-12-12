@@ -149,8 +149,8 @@ LCD_INIT FUNCTION
 	bl LCD_COMMAND_WRITE
 	
 	
+	mov r0, #0
 	mov r1, #0
-	mov r2, #0
 	mov r3, #480
 	mov r4, #320
 	mov r10, #BLACK
@@ -397,7 +397,7 @@ ADDRESS_SET
 
 	;POPPING ALL REGISTERS I PUSHED
 	POP {R0-R4, PC}
-	ENDFUNC
+	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 set_pin ; pin location in r2
 	PUSH {R0-R3, LR}
