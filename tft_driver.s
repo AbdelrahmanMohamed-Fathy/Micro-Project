@@ -410,7 +410,7 @@ set_pin ; pin location in r2
 	STR R1, [R0]
 	POP {R0-R3, PC}
 
-reset_pin
+reset_pin ; pin location in r2
 	PUSH {R0-R3, LR}
 	LDR R0, =TFT_BUS
 	LDR R1, [R0]
