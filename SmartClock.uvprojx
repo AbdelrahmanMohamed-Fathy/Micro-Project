@@ -404,6 +404,11 @@
               <FileType>2</FileType>
               <FilePath>.\font.s</FilePath>
             </File>
+            <File>
+              <FileName>rtc_driver.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\rtc_driver.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
