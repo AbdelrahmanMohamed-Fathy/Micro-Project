@@ -44,10 +44,10 @@ __main FUNCTION
 
 	;CALL FUNCTION SETUP
 	BL SETUP
-	mov r0,#0
-	mov r1,#0
-	mov r2,#'M'
-	mov r10,#BLACK
+	mov r0,#240
+	mov r1,#150
+	mov r2,#'7'
+	mov r10,#GREEN
 	BL DRAW
 
 	
