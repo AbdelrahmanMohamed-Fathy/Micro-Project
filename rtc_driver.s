@@ -102,9 +102,9 @@ RTC_INIT FUNCTION
 	BL waitRTC
 	BL reset_pin
 
- 	;Clearing RCF Bit
+ 	;Clearing RSF Bit
 	LDR R0,=RTC_BASE + RTC_CRL
- 	MOV R2,#
+ 	MOV R2,#RSF
   	BL waitRTC
    	BL reset_pin
  
