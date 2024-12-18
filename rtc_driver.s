@@ -14,8 +14,9 @@ RTC_CNTL 	EQU 0x1C
 RCC_BDCR 	EQU 0x20
 	
 ;Pins
+RSF		EQU 3	;Registers Synchronized Flag
 CNF 		EQU 4	;Configuration Flag
-DBP			EQU 8	;Backup Domain write protection
+DBP		EQU 8	;Backup Domain write protection
 RTCSEL0 	EQU 8	;RTC Clock Select
 RTCSEL1 	EQU 9	;RTC Clock Select
 RTCEN 		EQU 15	;RTC Enable
@@ -91,7 +92,7 @@ RTC_INIT FUNCTION
 	;STR R2,[R0]
 	
 	;LDR R0,=RTC_BASE + RTC_CNTH
-	;lDR R2,=
+	;lDR R2,=RSF
 	;BL waitRTC
 	;STR R2,[R0]
 	
@@ -100,7 +101,13 @@ RTC_INIT FUNCTION
 	mov R2,#CNF
 	BL waitRTC
 	BL reset_pin
-	
+
+ 	;Clearing RCF Bit
+	LDR R0,=RTC_BASE + RTC_CRL
+ 	MOV R2,#
+  	BL waitRTC
+   	BL reset_pin
+ 
 	;Protect backup register from write access
 	LDR R0,=PWR_BASE + PWR_CR
 	MOV R2,#DBP
