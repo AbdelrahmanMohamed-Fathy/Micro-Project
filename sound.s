@@ -4,13 +4,7 @@ GPIOB_ODR 	EQU GPIOB_BASE + 0x0C
 	AREA MYCODE, CODE, READONLY
 
 	
-__main FUNCTION
-
 	
-	
-STOP B STOP
-
-	ENDFUNC
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 set_pin

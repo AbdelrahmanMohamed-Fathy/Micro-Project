@@ -409,6 +409,16 @@
               <FileType>2</FileType>
               <FilePath>.\rtc_driver.s</FilePath>
             </File>
+            <File>
+              <FileName>sound.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\sound.s</FilePath>
+            </File>
+            <File>
+              <FileName>sensor_driver.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\sensor_driver.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -1,5 +1,11 @@
-INTERVAL EQU 0x4FFFFF
-TEN EQU 10
+TFT_INTERVAL 	EQU 0x4FFFFF
+INTERVAL_4MS 	EQU 288889
+INTERVAL_18MS 	EQU 1300000
+INTERVAL_27uS 	EQU 1944
+INTERVAL_40uS 	EQU 2880
+INTERVAL_50uS 	EQU 3600
+INTERVAL_70uS 	EQU 5040
+INTERVAL_80uS 	EQU 5760
 
 	EXPORT DELAY
 	EXPORT DIGIT_TO_ASCII
@@ -9,12 +15,12 @@ TEN EQU 10
 		
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;		
 DELAY FUNCTION 
-	PUSH{R0, LR}
-	LDR R0, =INTERVAL
+	;Takes R11
+	PUSH{R11, LR}
 DELAY_LOOP
-	SUBS R0,R0,#1
+	SUBS R11,R11,#1
 	BGT DELAY_LOOP
-	POP {R0, PC}
+	POP {R11, PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DIGIT_TO_ASCII FUNCTION
@@ -33,6 +39,8 @@ REG_TO_BCD FUNCTION
 	;R4: TENS
 	;R5: HUNDREDS
 	PUSH{R0-R12, LR}
+	
+	
 
 	POP{R0-R12, PC}
 	ENDFUNC
