@@ -14,9 +14,13 @@ INTERVAL_18MS 	EQU 1300000
 	
 	EXPORT SENSOR_READ
 
+
 	AREA mycode, CODE, READONLY
 		
 SENSOR_READ FUNCTION
+	;outputs sensor data to R2
+	;R2: sensor data output
+	PUSH {R0,R1,R3-R4,R11,LR}
 	
 	;Setting B9 to output at 50MHZ
 	LDR R0,=GPIOB_BASE + GPIOx_CRH
@@ -70,41 +74,67 @@ SENSOR_READ FUNCTION
 	BL set_pin
 	
 ;Waiting for start message
-	LDR R0,=GPIOB_BASE + GPIOx_IDR
-__PULL_DOWN_WAIT
-	LDR R1,[R0]
-	MOV R2,#0x200
-	ANDS R2,R1,R2
-	BEQ __PULL_DOWN_WAIT
-__PULL_UP_WAIT
-	LDR R1,[R0]
-	MOV R2,#0x200
-	ANDS R2,R1,R2
-	BNE __PULL_UP_WAIT
-
+	BL __PULL_DOWN_WAIT
+	BL __PULL_UP_WAIT
 ;Recieving message
+	MOV R2,#0
 	MOV R3,#0
-__OUTER
-	LDR R1,[R0]
-	MOV R2,#0x200
-	ANDS R2,R1,R2
-	BEQ __OUTER
+	MOV R4,#0
+__MESSAGE
+	BL __PULL_DOWN_WAIT
 
 	LDR R11,=INTERVAL_27uS
 	BL DELAY
 	LDR R1,[R0]
-	MVN R1,R1
+	ORN R1,#0xFFFFFDFF
+	LSR R1,#8
+	ADD R2,R2,R1
+	LSL R2,#1
+	BL __PULL_UP_WAIT
 	
+	ADD R3,#1
+	CMP R3,#32
+	BNE __MESSAGE
+__CHECKSUM	
+	BL __PULL_DOWN_WAIT
+
+	LDR R11,=INTERVAL_27uS
+	BL DELAY
+	LDR R1,[R0]
+	ORN R1,#0xFFFFFDFF
+	LSR R1,#8
+	ADD R4,R4,R1
+	LSL R4,#1
+	BL __PULL_UP_WAIT
 	
 	ADD R3,#1
 	CMP R3,#40
-	BNE __OUTER
-__EXIT_LOOP
-
-
 	
+	;TODO Verify message
+	
+	POP {R0,R1,R3-R4,R11,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+__PULL_DOWN_WAIT
+	PUSH {R0-R2,LR}
+__INNER_DOWN
+	LDR R0,=GPIOB_BASE + GPIOx_IDR
+	LDR R1,[R0]
+	MOV R2,#0x200
+	ANDS R2,R1,R2
+	BEQ __INNER_DOWN
+	POP {R0-R2,PC}
+
+__PULL_UP_WAIT
+	PUSH {R0-R2,LR}
+__INNER_UP
+	LDR R0,=GPIOB_BASE + GPIOx_IDR
+	LDR R1,[R0]
+	MOV R2,#0x200
+	ANDS R2,R1,R2
+	BNE __INNER_UP
+	POP {R0-R2,PC}
+
 set_pin 
 	; address in R0
 	; pin location in R2
