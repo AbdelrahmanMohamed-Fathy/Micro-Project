@@ -39,6 +39,7 @@ LETTER_SPACING EQU 15
 	IMPORT DIGIT_TO_ASCII
 	IMPORT REG_TO_BCD
 	IMPORT SENSOR_READ
+	IMPORT SENSOR_INIT
 		
 	EXPORT __main
 
@@ -50,7 +51,9 @@ __main FUNCTION
 	;CALL FUNCTION SETUP
 	BL SETUP
 
-	
+	MOV R2,#0
+	BL SENSOR_READ
+	MOV R3,R2
 	
 STOP B STOP
 
@@ -77,6 +80,7 @@ SETUP
 	;Initializing TFT LCD
 	BL LCD_INIT
 	;BL RTC_INIT
+	BL SENSOR_INIT
 	
 	POP {R0-R2,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

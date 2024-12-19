@@ -17,6 +17,35 @@ INTERVAL_18MS 	EQU 1300000
 
 	AREA mycode, CODE, READONLY
 		
+SENSOR_INIT FUNCTION
+	PUSH {R0-R2,LR}
+	
+	;Setting B9 to output at 50MHZ
+	LDR R0,=GPIOB_BASE + GPIOx_CRH
+	MOV R2,#4
+	BL set_pin
+	
+	LDR R0,=GPIOB_BASE + GPIOx_CRH
+	MOV R2,#5
+	BL set_pin
+	
+	
+	;Setting B9 to output at push-pull
+	LDR R0,=GPIOB_BASE + GPIOx_CRH
+	MOV R2,#6
+	BL reset_pin
+	
+	LDR R0,=GPIOB_BASE + GPIOx_CRH
+	MOV R2,#7
+	BL reset_pin
+	
+	LDR R0,=GPIOB_BASE +GPIOx_ODR
+	MOV R2,#9
+	BL set_pin
+	
+	POP {R0-R2,PC}
+	ENDFUNC
+		
 SENSOR_READ FUNCTION
 	;outputs sensor data to R2
 	;R2: sensor data output
@@ -109,6 +138,10 @@ __CHECKSUM
 	
 	ADD R3,#1
 	CMP R3,#40
+	BNE __CHECKSUM
+	
+	BL __PULL_DOWN_WAIT
+	BL SENSOR_INIT
 	
 	;TODO Verify message
 	
