@@ -33,49 +33,66 @@ DRAW_MORNING
     BL DRAW_RECTANGLE_FILLED
 
 	; draw cloud1
+
+	; 1st cloud from the left
     LDR R9, =CLOUD1_TABLE
     MOV R0, #10
-    MOV R1, #50
+    MOV R1, #60
     BL DRAW_IMAGE
-
+	
+	; 3rd cloud from the left
     MOV R0, #80
-    MOV R1, #50
+    MOV R1, #60
     BL DRAW_IMAGE
 
+	; 6th cloud from the left
     MOV R0, #200
     MOV R1, #40
     BL DRAW_IMAGE
 
+	; 8th cloud from the left
     MOV R0, #320
     MOV R1, #60
     BL DRAW_IMAGE
 
+	; 10th cloud from the left
     MOV R0, #420
     MOV R1, #60
     BL DRAW_IMAGE
 
 	; draw cloud2
     LDR R9, =CLOUD2_TABLE
+
+	; 4th cloud from the left
+    MOV R0, #110
+    MOV R1, #70
+    BL DRAW_IMAGE
+
+	; 5th cloud from the left
     MOV R0, #170
     MOV R1, #60
     BL DRAW_IMAGE
 
-    MOV R0, #230
-    MOV R1, #60
+	; 7th cloud from the left
+    MOV R0, #255
+    MOV R1, #30
     BL DRAW_IMAGE
 
+	; 9th cloud from the left
     MOV R0, #370
     MOV R1, #40
     BL DRAW_IMAGE
 
+	; 2nd cloud from the left
     MOV R0, #40
-    MOV R1, #70
+    MOV R1, #90
     BL DRAW_IMAGE
 
 	; draw glass
     LDR R9, =GRASS_TABLE
     MOV R0, #0
     MOV R1, #210
+
 GRASS_LOOP
     BL DRAW_IMAGE
     ADD R0, R0, #20
