@@ -48,6 +48,14 @@ __main FUNCTION
 
 	;CALL FUNCTION SETUP
 	BL SETUP
+
+	;RTC test
+kofta
+	BL RTC_READ
+	B kofta
+
+	
+	;Draw test
 	mov r0,#0
 	mov r1,#0
 	bl DRAW_IMAGE
@@ -80,7 +88,7 @@ SETUP
 	
 	;Initializing TFT LCD
 	BL LCD_INIT
-	;BL RTC_INIT
+	BL RTC_INIT
 	BL SENSOR_INIT
 	
 	POP {R0-R2,PC}
