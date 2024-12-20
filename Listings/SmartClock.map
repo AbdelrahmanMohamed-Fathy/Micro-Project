@@ -8,7 +8,7 @@ Section Cross References
     main.o(MYCODE) refers (Special) to font.o(MYCODE) for DRAW
     main.o(MYCODE) refers (Special) to tft_driver.o(MYCODE) for DRAW_RECTANGLE_FILLED
     main.o(MYCODE) refers (Special) to rtc_driver.o(MYCODE) for RTC_INIT
-    main.o(MYCODE) refers (Special) to sensor_driver.o(mycode) for SENSOR_READ
+    main.o(MYCODE) refers to sensor_driver.o(mycode) for SENSOR_READ
     tft_driver.o(MYCODE) refers to util.o(MYCODE) for DELAY
     font.o(MYCODE) refers to tft_driver.o(MYCODE) for DRAW_RECTANGLE_FILLED
     sensor_driver.o(mycode) refers to util.o(MYCODE) for DELAY
@@ -75,12 +75,12 @@ Image Symbol Table
     SetSysClockTo72                          0x0800013d   Thumb Code   290  system_stm32f10x.o(.text.SetSysClockTo72)
     [Anonymous Symbol]                       0x0800013c   Section        0  system_stm32f10x.o(.text.SetSysClockTo72)
     [Anonymous Symbol]                       0x08000260   Section        0  system_stm32f10x.o(.text.SystemInit)
-    MYCODE                                   0x080002c8   Section       56  main.o(MYCODE)
-    MYCODE                                   0x08000300   Section       30  util.o(MYCODE)
-    MYCODE                                   0x08000320   Section      556  tft_driver.o(MYCODE)
-    MYCODE                                   0x0800054c   Section    13128  font.o(MYCODE)
-    MYCODE                                   0x08003894   Section      228  rtc_driver.o(MYCODE)
-    mycode                                   0x08003978   Section      316  sensor_driver.o(mycode)
+    MYCODE                                   0x080002c8   Section       72  main.o(MYCODE)
+    MYCODE                                   0x08000310   Section       30  util.o(MYCODE)
+    MYCODE                                   0x08000330   Section      556  tft_driver.o(MYCODE)
+    MYCODE                                   0x0800055c   Section    13128  font.o(MYCODE)
+    MYCODE                                   0x080038a4   Section      228  rtc_driver.o(MYCODE)
+    mycode                                   0x08003988   Section      380  sensor_driver.o(mycode)
     Heap_Mem                                 0x20000000   Data         512  startup_stm32f10x_md.o(HEAP)
     HEAP                                     0x20000000   Section      512  startup_stm32f10x_md.o(HEAP)
     Stack_Mem                                0x20000200   Data        1024  startup_stm32f10x_md.o(STACK)
@@ -153,19 +153,20 @@ Image Symbol Table
     __rt_heap_escrow$2region                 0x0800012f   Thumb Code     2  heapauxi.o(.text)
     __rt_heap_expand$2region                 0x08000131   Thumb Code     2  heapauxi.o(.text)
     SystemInit                               0x08000261   Thumb Code   102  system_stm32f10x.o(.text.SystemInit)
-    __main                                   0x080002c9   Thumb Code     6  main.o(MYCODE)
-    DELAY                                    0x08000301   Thumb Code    14  util.o(MYCODE)
-    DIGIT_TO_ASCII                           0x0800030f   Thumb Code     8  util.o(MYCODE)
-    REG_TO_BCD                               0x08000317   Thumb Code     8  util.o(MYCODE)
-    LCD_INIT                                 0x08000321   Thumb Code   200  tft_driver.o(MYCODE)
-    LCD_COMMAND_WRITE                        0x080003e9   Thumb Code    24  tft_driver.o(MYCODE)
-    LCD_DATA_WRITE                           0x08000401   Thumb Code    22  tft_driver.o(MYCODE)
-    DRAW_PIXEL                               0x08000417   Thumb Code    58  tft_driver.o(MYCODE)
-    DRAW_RECTANGLE_FILLED                    0x08000451   Thumb Code    66  tft_driver.o(MYCODE)
-    DRAW                                     0x0800054d   Thumb Code   504  font.o(MYCODE)
-    RTC_READ                                 0x08003895   Thumb Code    18  rtc_driver.o(MYCODE)
-    RTC_INIT                                 0x080038a7   Thumb Code   120  rtc_driver.o(MYCODE)
-    SENSOR_READ                              0x08003979   Thumb Code   222  sensor_driver.o(mycode)
+    __main                                   0x080002c9   Thumb Code    16  main.o(MYCODE)
+    DELAY                                    0x08000311   Thumb Code    14  util.o(MYCODE)
+    DIGIT_TO_ASCII                           0x0800031f   Thumb Code     8  util.o(MYCODE)
+    REG_TO_BCD                               0x08000327   Thumb Code     8  util.o(MYCODE)
+    LCD_INIT                                 0x08000331   Thumb Code   200  tft_driver.o(MYCODE)
+    LCD_COMMAND_WRITE                        0x080003f9   Thumb Code    24  tft_driver.o(MYCODE)
+    LCD_DATA_WRITE                           0x08000411   Thumb Code    22  tft_driver.o(MYCODE)
+    DRAW_PIXEL                               0x08000427   Thumb Code    58  tft_driver.o(MYCODE)
+    DRAW_RECTANGLE_FILLED                    0x08000461   Thumb Code    66  tft_driver.o(MYCODE)
+    DRAW                                     0x0800055d   Thumb Code   504  font.o(MYCODE)
+    RTC_READ                                 0x080038a5   Thumb Code    18  rtc_driver.o(MYCODE)
+    RTC_INIT                                 0x080038b7   Thumb Code   120  rtc_driver.o(MYCODE)
+    SENSOR_INIT                              0x08003989   Thumb Code    54  sensor_driver.o(mycode)
+    SENSOR_READ                              0x080039bf   Thumb Code   232  sensor_driver.o(mycode)
 
 
 
@@ -175,9 +176,9 @@ Memory Map of the image
 
   Image Entry point : 0x080000ed
 
-  Load Region LR_1 (Base: 0x08000000, Size: 0x00003ab4, Max: 0xffffffff, ABSOLUTE)
+  Load Region LR_1 (Base: 0x08000000, Size: 0x00003b04, Max: 0xffffffff, ABSOLUTE)
 
-    Execution Region ER_RO (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00003ab4, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00003b04, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -190,21 +191,21 @@ Memory Map of the image
     0x0800025e   0x0800025e   0x00000002   PAD
     0x08000260   0x08000260   0x00000066   Code   RO           38    .text.SystemInit    system_stm32f10x.o
     0x080002c6   0x080002c6   0x00000002   PAD
-    0x080002c8   0x080002c8   0x00000038   Code   RO            1  * MYCODE              main.o
-    0x08000300   0x08000300   0x0000001e   Code   RO            7    MYCODE              util.o
-    0x0800031e   0x0800031e   0x00000002   PAD
-    0x08000320   0x08000320   0x0000022c   Code   RO           11    MYCODE              tft_driver.o
-    0x0800054c   0x0800054c   0x00003348   Code   RO           15    MYCODE              font.o
-    0x08003894   0x08003894   0x000000e4   Code   RO           19    MYCODE              rtc_driver.o
-    0x08003978   0x08003978   0x0000013c   Code   RO           26    mycode              sensor_driver.o
+    0x080002c8   0x080002c8   0x00000048   Code   RO            1  * MYCODE              main.o
+    0x08000310   0x08000310   0x0000001e   Code   RO            7    MYCODE              util.o
+    0x0800032e   0x0800032e   0x00000002   PAD
+    0x08000330   0x08000330   0x0000022c   Code   RO           11    MYCODE              tft_driver.o
+    0x0800055c   0x0800055c   0x00003348   Code   RO           15    MYCODE              font.o
+    0x080038a4   0x080038a4   0x000000e4   Code   RO           19    MYCODE              rtc_driver.o
+    0x08003988   0x08003988   0x0000017c   Code   RO           26    mycode              sensor_driver.o
 
 
-    Execution Region ER_RW (Exec base: 0x20000000, Load base: 0x08003ab4, Size: 0x00000000, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RW (Exec base: 0x20000000, Load base: 0x08003b04, Size: 0x00000000, Max: 0xffffffff, ABSOLUTE)
 
     **** No section assigned to this execution region ****
 
 
-    Execution Region ER_ZI (Exec base: 0x20000000, Load base: 0x08003ab4, Size: 0x00000600, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_ZI (Exec base: 0x20000000, Load base: 0x08003b04, Size: 0x00000600, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -220,16 +221,16 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
      13128          0          0          0          0       3732   font.o
-        56         12          0          0          0        316   main.o
+        72         14          0          0          0        320   main.o
        228         30          0          0          0        384   rtc_driver.o
-       316         18          0          0          0        380   sensor_driver.o
+       380         18          0          0          0        440   sensor_driver.o
         64         26        236          0       1536        788   startup_stm32f10x_md.o
        400          0          0          0          0       2963   system_stm32f10x.o
        556          8          0          0          0        624   tft_driver.o
         30          0          0          0          0        352   util.o
 
     ----------------------------------------------------------------------
-     14784         94        236          0       1536       9539   Object Totals
+     14864         96        236          0       1536       9603   Object Totals
          0          0          0          0          0          0   (incl. Generated)
          6          0          0          0          0          0   (incl. Padding)
 
@@ -259,15 +260,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     14792         94        236          0       1536       9379   Grand Totals
-     14792         94        236          0       1536       9379   ELF Image Totals
-     14792         94        236          0          0          0   ROM Totals
+     14872         96        236          0       1536       9443   Grand Totals
+     14872         96        236          0       1536       9443   ELF Image Totals
+     14872         96        236          0          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                15028 (  14.68kB)
+    Total RO  Size (Code + RO Data)                15108 (  14.75kB)
     Total RW  Size (RW Data + ZI Data)              1536 (   1.50kB)
-    Total ROM Size (Code + RO Data + RW Data)      15028 (  14.68kB)
+    Total ROM Size (Code + RO Data + RW Data)      15108 (  14.75kB)
 
 ==============================================================================
 
