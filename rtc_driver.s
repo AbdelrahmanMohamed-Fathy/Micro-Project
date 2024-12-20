@@ -69,6 +69,12 @@ RTC_INIT FUNCTION
 	MOV R2,#DBP
 	BL reset_pin
 	
+	
+	;Ressetting BDR
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#16
+	BL set_pin
+	
 	;Setting RTCEN
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCEN
