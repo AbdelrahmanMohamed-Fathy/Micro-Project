@@ -53,9 +53,9 @@ __main FUNCTION
 	BL SETUP
 
 	;RTC test
-;kofta
-	;BL RTC_READ
-	;B kofta
+kofta
+	BL RTC_READ
+	B kofta
 		
 	;Draw MORNING
 	BL DRAW_MORNING

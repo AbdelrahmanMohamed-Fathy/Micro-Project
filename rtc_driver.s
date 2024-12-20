@@ -6,6 +6,7 @@ RCC_BASE 	EQU 0x40021000
 	
 ;Offsets
 PWR_CR 		EQU 0x00
+RTC_CRH		EQU 0x00
 RTC_CRL 	EQU 0x04
 RTC_PRLH 	EQU 0x08
 RTC_PRLL 	EQU 0x0C
@@ -17,7 +18,6 @@ RCC_CSR		EQU 0x24
 
 	
 ;Pins
-LSION		EQU 0	;LSI ON
 RSF			EQU 3	;Registers Synchronized Flag
 CNF 		EQU 4	;Configuration Flag
 DBP			EQU 8	;Backup Domain write protection
@@ -68,15 +68,17 @@ RTC_INIT FUNCTION
 	MOV R2,#PWREN
 	BL set_pin
 	
-	;Enabling LSI
-	LDR R0,=RCC_BASE + RCC_CSR
-	MOV R2,#LSION
-	BL set_pin
-	
 	;Remove protection from backup registers
 	LDR R0,=PWR_BASE + PWR_CR
 	MOV R2,#DBP
 	BL reset_pin
+	
+	;Enabling LSE
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#0
+	BL set_pin
+	
+	BL waitLSE
 	
 	;Setting RTCEN
 	LDR R0,=RCC_BASE + RCC_BDCR
@@ -86,17 +88,29 @@ RTC_INIT FUNCTION
 	;Setting RTCSEL[1:0] to 10 (LSI)
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL1
-	BL set_pin
+	BL reset_pin
 	
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL0
-	BL reset_pin
+	BL set_pin
 	
 	;Enter configuration mode
 	LDR R0,=RTC_BASE + RTC_CRL
 	mov R2,#CNF
 	BL waitRTC
 	BL set_pin
+	
+	;Enabling Seconds Interrupt
+	LDR R0,=RTC_BASE + RTC_CRH
+ 	MOV R2,#0
+  	BL waitRTC
+   	BL set_pin
+	
+	;Clearing Seconds Flag
+	LDR R0,=RTC_BASE + RTC_CRL
+	MOV R2,#0
+	BL waitRTC
+	BL reset_pin
 	
 	;Clearing RSF Bit
 	LDR R0,=RTC_BASE + RTC_CRL
@@ -174,12 +188,12 @@ __loopback1
 	BEQ __loopback1
 	POP {R0-R3, PC}
 	
-waitLSI
+waitLSE
 	PUSH {R0-R3, LR}
-	LDR R0,=RCC_BASE + RCC_CSR
+	LDR R0,=RCC_BASE + RCC_BDCR
 __loopback2
 	LDR R1,[R0]
-	AND R1, R1,#0x20
+	AND R1, R1,#0x2
 	CMP R1,#0
 	BEQ __loopback2
 	POP {R0-R3, PC}
