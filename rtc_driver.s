@@ -50,6 +50,15 @@ RTC_READ FUNCTION
 RTC_INIT FUNCTION
 	PUSH {R0-R3,LR}
 
+	;Ressetting BDR
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#16
+	BL set_pin
+	
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#16
+	BL reset_pin
+	
 	;Enabling PWR and BKP
 	LDR R0,=RCC_BASE + RCC_APB1ENR
 	MOV R2,#BKPEN
@@ -69,12 +78,6 @@ RTC_INIT FUNCTION
 	MOV R2,#DBP
 	BL reset_pin
 	
-	
-	;Ressetting BDR
-	LDR R0,=RCC_BASE + RCC_BDCR
-	MOV R2,#16
-	BL set_pin
-	
 	;Setting RTCEN
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCEN
@@ -83,11 +86,11 @@ RTC_INIT FUNCTION
 	;Setting RTCSEL[1:0] to 10 (LSI)
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL1
-	BL reset_pin
+	BL set_pin
 	
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL0
-	BL set_pin
+	BL reset_pin
 	
 	;Enter configuration mode
 	LDR R0,=RTC_BASE + RTC_CRL
