@@ -48,6 +48,8 @@ RTC_READ FUNCTION
 	LDR R0,=RTC_BASE + RTC_CNTL
 	LDR R2,[R0]
 	ADD R2,R2,R1
+	LDR R0,=RTC_BASE + RTC_CRL
+	LDR R3,[R0]
 	POP {R0-R1,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -116,11 +118,11 @@ RTC_INIT FUNCTION
   	BL waitRTC
    	BL set_pin
 	
-	;Clearing Seconds Flag
-	LDR R0,=RTC_BASE + RTC_CRL
-	MOV R2,#0
-	BL waitRTC
-	BL reset_pin
+;	;Clearing Seconds Flag
+;	LDR R0,=RTC_BASE + RTC_CRL
+;	MOV R2,#0
+;	BL waitRTC
+;	BL reset_pin
 	
 	;Clearing RSF Bit
 	LDR R0,=RTC_BASE + RTC_CRL
@@ -140,8 +142,13 @@ RTC_INIT FUNCTION
 	STR R2,[R0]
 	
 	;Setting time
+	LDR R0,=RTC_BASE + RTC_CNTH
+	LDR R2,=0x3333
+	BL waitRTC
+	STR R2,[R0]
+	
 	LDR R0,=RTC_BASE + RTC_CNTL
-	LDR R2,=0x33333333
+	LDR R2,=0x3333
 	BL waitRTC
 	STR R2,[R0]
 	
