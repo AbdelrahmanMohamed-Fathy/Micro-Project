@@ -55,9 +55,9 @@ __main FUNCTION
 	BL SETUP
 
 	;RTC test
-;kofta
-	;BL RTC_READ
-	;B kofta
+kofta
+	BL RTC_READ
+	B kofta
 		
 	;Draw MORNING
 	BL DRAW_MORNING
@@ -69,7 +69,7 @@ __main FUNCTION
 
 	MOV R0, #240
 	MOV R1, #160
-	MOV R2, #':'
+	MOV R2, # ':'
 	MOV R10, #0
 	BL DRAW
 
@@ -104,7 +104,7 @@ SETUP
 	
 	;Initializing TFT LCD
 	BL LCD_INIT
-	;BL RTC_INIT
+	BL RTC_INIT
 	;BL SENSOR_INIT
 	
 	POP {R0-R2,PC}

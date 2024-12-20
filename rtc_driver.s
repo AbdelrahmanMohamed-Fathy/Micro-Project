@@ -62,9 +62,9 @@ RTC_INIT FUNCTION
 	;Remove protection from backup registers
 	LDR R0,=PWR_BASE + PWR_CR
 	MOV R2,#DBP
-	BL reset_pin
+	BL set_pin
 	
-	;Ressetting BDR
+	;Resetting BDR
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#16
 	BL set_pin
@@ -80,18 +80,18 @@ RTC_INIT FUNCTION
 	
 	BL waitLSE
 	
-	;Setting RTCEN
-	LDR R0,=RCC_BASE + RCC_BDCR
-	MOV R2,#RTCEN
-	BL set_pin
-	
-	;Setting RTCSEL[1:0] to 10 (LSI)
+	;Setting RTCSEL[1:0] to 01 (LSE)
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL1
 	BL reset_pin
 	
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL0
+	BL set_pin
+	;Setting RTCEN
+	
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#RTCEN
 	BL set_pin
 	
 	;Enter configuration mode
@@ -145,11 +145,12 @@ RTC_INIT FUNCTION
 	mov R2,#CNF
 	BL waitRTC
 	BL reset_pin
- 
+	
+	BL waitRTC
 	;Protect backup register from write access
 	LDR R0,=PWR_BASE + PWR_CR
 	MOV R2,#DBP
-	BL set_pin
+	BL reset_pin
 	
 	POP {R0-R3,PC}
 	ENDFUNC
