@@ -49,15 +49,6 @@ RTC_READ FUNCTION
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 RTC_INIT FUNCTION
 	PUSH {R0-R3,LR}
-
-	;Ressetting BDR
-	LDR R0,=RCC_BASE + RCC_BDCR
-	MOV R2,#16
-	BL set_pin
-	
-	LDR R0,=RCC_BASE + RCC_BDCR
-	MOV R2,#16
-	BL reset_pin
 	
 	;Enabling PWR and BKP
 	LDR R0,=RCC_BASE + RCC_APB1ENR
@@ -71,6 +62,15 @@ RTC_INIT FUNCTION
 	;Remove protection from backup registers
 	LDR R0,=PWR_BASE + PWR_CR
 	MOV R2,#DBP
+	BL reset_pin
+	
+	;Ressetting BDR
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#16
+	BL set_pin
+	
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#16
 	BL reset_pin
 	
 	;Enabling LSE
