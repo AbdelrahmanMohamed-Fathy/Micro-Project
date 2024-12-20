@@ -37,6 +37,8 @@ LETTER_SPACING EQU 15
 	IMPORT REG_TO_BCD
 	IMPORT SENSOR_READ
 	IMPORT SENSOR_INIT
+
+	IMPORT DRAW
 	IMPORT DRAW_MORNING
 	IMPORT DRAW_NIGHT
 	IMPORT DRAW_LARGE_NUMBER
@@ -53,9 +55,9 @@ __main FUNCTION
 	BL SETUP
 
 	;RTC test
-kofta
-	BL RTC_READ
-	B kofta
+;kofta
+	;BL RTC_READ
+	;B kofta
 		
 	;Draw MORNING
 	BL DRAW_MORNING
@@ -67,9 +69,9 @@ kofta
 
 	MOV R0, #240
 	MOV R1, #160
-	MOV R2, #'2'
+	MOV R2, #'a'
 	MOV R10, #0
-	BL DRAW_LARGE_NUMBER
+	BL DRAW
 
 	;Draw NIGHT
 	;BL DRAW_NIGHT
@@ -102,8 +104,8 @@ SETUP
 	
 	;Initializing TFT LCD
 	BL LCD_INIT
-	BL RTC_INIT
-	BL SENSOR_INIT
+	;BL RTC_INIT
+	;BL SENSOR_INIT
 	
 	POP {R0-R2,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
