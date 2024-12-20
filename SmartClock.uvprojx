@@ -420,9 +420,9 @@
               <FilePath>.\sensor_driver.s</FilePath>
             </File>
             <File>
-              <FileName>morningDraw.s</FileName>
+              <FileName>draw_bg.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\morningDraw.s</FilePath>
+              <FilePath>.\draw_bg.s</FilePath>
             </File>
           </Files>
         </Group>
