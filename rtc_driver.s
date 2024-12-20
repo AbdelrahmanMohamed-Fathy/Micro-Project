@@ -6,6 +6,7 @@ RCC_BASE 	EQU 0x40021000
 	
 ;Offsets
 PWR_CR 		EQU 0x00
+RTC_CRH		EQU 0x00
 RTC_CRL 	EQU 0x04
 RTC_PRLH 	EQU 0x08
 RTC_PRLL 	EQU 0x0C
@@ -97,6 +98,18 @@ RTC_INIT FUNCTION
 	mov R2,#CNF
 	BL waitRTC
 	BL set_pin
+	
+	;Enabling Seconds Interrupt
+	LDR R0,=RTC_BASE + RTC_CRH
+ 	MOV R2,#0
+  	BL waitRTC
+   	BL set_pin
+	
+	;Clearing Seconds Flag
+	LDR R0,=RTC_BASE + RTC_CRL
+	MOV R2,#0
+	BL waitRTC
+	BL reset_pin
 	
 	;Clearing RSF Bit
 	LDR R0,=RTC_BASE + RTC_CRL
