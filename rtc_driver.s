@@ -193,7 +193,7 @@ waitLSE
 	LDR R0,=RCC_BASE + RCC_BDCR
 __loopback2
 	LDR R1,[R0]
-	AND R1, R1,#0x20
+	AND R1, R1,#0x2
 	CMP R1,#0
 	BEQ __loopback2
 	POP {R0-R3, PC}
