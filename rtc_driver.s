@@ -11,6 +11,7 @@ RTC_PRLH 	EQU 0x08
 RTC_PRLL 	EQU 0x0C
 RTC_CNTH 	EQU 0x18
 RTC_CNTL 	EQU 0x1C
+RCC_APB1ENR EQU 0x1C
 RCC_BDCR 	EQU 0x20
 	
 ;Pins
@@ -20,6 +21,8 @@ DBP			EQU 8	;Backup Domain write protection
 RTCSEL0 	EQU 8	;RTC Clock Select
 RTCSEL1 	EQU 9	;RTC Clock Select
 RTCEN 		EQU 15	;RTC Enable
+BKPEN		EQU 27	;BKP Enable
+PWREN		EQU 28	;PWR Enable
 
 
 	EXPORT RTC_INIT
@@ -43,6 +46,15 @@ RTC_READ FUNCTION
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 RTC_INIT FUNCTION
 	PUSH {R0-R3,LR}
+
+	;Enabling PWR and BKP
+	LDR R0,=RCC_BASE + RCC_APB1ENR
+	MOV R2,#BKPEN
+	BL set_pin
+
+	LDR R0,=RCC_BASE + RCC_APB1ENR
+	MOV R2,#PWREN
+	BL set_pin
 	
 	;Remove protection from backup registers
 	LDR R0,=PWR_BASE + PWR_CR
