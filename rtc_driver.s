@@ -13,8 +13,11 @@ RTC_CNTH 	EQU 0x18
 RTC_CNTL 	EQU 0x1C
 RCC_APB1ENR EQU 0x1C
 RCC_BDCR 	EQU 0x20
+RCC_CSR		EQU 0x24
+
 	
 ;Pins
+LSION		EQU 0	;LSI ON
 RSF			EQU 3	;Registers Synchronized Flag
 CNF 		EQU 4	;Configuration Flag
 DBP			EQU 8	;Backup Domain write protection
@@ -54,6 +57,11 @@ RTC_INIT FUNCTION
 
 	LDR R0,=RCC_BASE + RCC_APB1ENR
 	MOV R2,#PWREN
+	BL set_pin
+	
+	;Enabling LSI
+	LDR R0,=RCC_BASE + RCC_CSR
+	MOV R2,#LSION
 	BL set_pin
 	
 	;Remove protection from backup registers

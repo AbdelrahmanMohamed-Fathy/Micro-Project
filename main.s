@@ -54,7 +54,7 @@ kofta
 	BL RTC_READ
 	B kofta
 
-	
+
 	;Draw test
 	mov r0,#0
 	mov r1,#0
