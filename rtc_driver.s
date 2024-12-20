@@ -18,7 +18,6 @@ RCC_CSR		EQU 0x24
 
 	
 ;Pins
-LSION		EQU 0	;LSI ON
 RSF			EQU 3	;Registers Synchronized Flag
 CNF 		EQU 4	;Configuration Flag
 DBP			EQU 8	;Backup Domain write protection
@@ -69,15 +68,17 @@ RTC_INIT FUNCTION
 	MOV R2,#PWREN
 	BL set_pin
 	
-	;Enabling LSI
-	LDR R0,=RCC_BASE + RCC_CSR
-	MOV R2,#LSION
-	BL set_pin
-	
 	;Remove protection from backup registers
 	LDR R0,=PWR_BASE + PWR_CR
 	MOV R2,#DBP
 	BL reset_pin
+	
+	;Enabling LSE
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#0
+	BL set_pin
+	
+	BL waitLSE
 	
 	;Setting RTCEN
 	LDR R0,=RCC_BASE + RCC_BDCR
@@ -87,11 +88,11 @@ RTC_INIT FUNCTION
 	;Setting RTCSEL[1:0] to 10 (LSI)
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL1
-	BL set_pin
+	BL reset_pin
 	
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL0
-	BL reset_pin
+	BL set_pin
 	
 	;Enter configuration mode
 	LDR R0,=RTC_BASE + RTC_CRL
@@ -187,9 +188,9 @@ __loopback1
 	BEQ __loopback1
 	POP {R0-R3, PC}
 	
-waitLSI
+waitLSE
 	PUSH {R0-R3, LR}
-	LDR R0,=RCC_BASE + RCC_CSR
+	LDR R0,=RCC_BASE + RCC_BDCR
 __loopback2
 	LDR R1,[R0]
 	AND R1, R1,#0x20
