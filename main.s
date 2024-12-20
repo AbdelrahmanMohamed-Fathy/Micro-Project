@@ -53,9 +53,14 @@ __main FUNCTION
 	BL SETUP
 
 	;RTC test
-;kofta
-	;BL RTC_READ
-	;B kofta
+kofta
+	BL SENSOR_READ
+	B kofta
+
+	LDR R9, =TREES_TABLE
+	MOV R0,#20
+	MOV R1,#20
+	BL DRAW_IMAGE
 	
 	;Draw MORNING
 	;BL DRAW_MORNING
