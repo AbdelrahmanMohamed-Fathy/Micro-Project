@@ -165,5 +165,14 @@ __loopback
 	BEQ __loopback
 	POP {R0-R3, PC}
 	
+waitLSI
+	PUSH {R0-R3, LR}
+	LDR R0,=RTC_BASE + RTC_CRL
+__loopback
+	LDR R1,[R0]
+	AND R1, R1,#0x20
+	CMP R1,#0
+	BEQ __loopback
+	POP {R0-R3, PC}
 	
 	END
