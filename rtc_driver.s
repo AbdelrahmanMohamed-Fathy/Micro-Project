@@ -28,8 +28,12 @@ BKPEN		EQU 27	;BKP Enable
 PWREN		EQU 28	;PWR Enable
 
 
+TFT_INTERVAL 	EQU 0x4FFFFF
+
 	EXPORT RTC_INIT
 	EXPORT RTC_READ
+	
+	IMPORT DELAY
 	
 	AREA	MYCODE, CODE, READONLY
 	
@@ -48,7 +52,7 @@ RTC_READ FUNCTION
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 RTC_INIT FUNCTION
-	PUSH {R0-R3,LR}
+	PUSH {R0-R3,R11,LR}
 	
 	;Enabling PWR and BKP
 	LDR R0,=RCC_BASE + RCC_APB1ENR
@@ -69,9 +73,15 @@ RTC_INIT FUNCTION
 	MOV R2,#16
 	BL set_pin
 	
+	LDR R11,=TFT_INTERVAL
+	BL DELAY
+	
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#16
 	BL reset_pin
+	
+	LDR R11,=TFT_INTERVAL
+	BL DELAY
 	
 	;Enabling LSE
 	LDR R0,=RCC_BASE + RCC_BDCR
@@ -129,16 +139,11 @@ RTC_INIT FUNCTION
 	BL waitRTC
 	STR R2,[R0]
 	
-	;;Setting time
-	;LDR R0,=RTC_BASE + RTC_CNTL
-	;lDR R2,=
-	;BL waitRTC
-	;STR R2,[R0]
-	
-	;LDR R0,=RTC_BASE + RTC_CNTH
-	;lDR R2,=RSF
-	;BL waitRTC
-	;STR R2,[R0]
+	;Setting time
+	LDR R0,=RTC_BASE + RTC_CNTL
+	LDR R2,=0x33333333
+	BL waitRTC
+	STR R2,[R0]
 	
 	;Exit configuration mode
 	LDR R0,=RTC_BASE + RTC_CRL
@@ -152,7 +157,7 @@ RTC_INIT FUNCTION
 	MOV R2,#DBP
 	BL reset_pin
 	
-	POP {R0-R3,PC}
+	POP {R0-R3,R11,PC}
 	ENDFUNC
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
