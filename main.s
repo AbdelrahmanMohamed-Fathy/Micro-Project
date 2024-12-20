@@ -53,12 +53,23 @@ __main FUNCTION
 	BL SETUP
 
 	;RTC test
-kofta
-	BL RTC_READ
-	B kofta
+;kofta
+	;BL RTC_READ
+	;B kofta
 		
 	;Draw MORNING
 	BL DRAW_MORNING
+
+	; R0: x
+	; R1: y
+	; R2: ASCII character
+	; R10: color
+
+	MOV R0, #240
+	MOV R1, #160
+	MOV R2, '2'
+	MOV R10, #0
+	BL DRAW_LARGE_NUMBER
 
 	;Draw NIGHT
 	;BL DRAW_NIGHT
