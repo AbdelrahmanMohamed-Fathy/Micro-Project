@@ -69,7 +69,7 @@ __main FUNCTION
 
 	MOV R0, #240
 	MOV R1, #160
-	MOV R2, #'2'
+	MOV R2, #'a'
 	MOV R10, #0
 	BL DRAW
 
