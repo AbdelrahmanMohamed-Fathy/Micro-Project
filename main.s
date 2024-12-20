@@ -53,13 +53,15 @@ __main FUNCTION
 	BL SETUP
 
 	;RTC test
-kofta
+;kofta
 	;BL RTC_READ
 	;B kofta
+
 	LDR R9, =TREES_TABLE
 	MOV R0,#20
 	MOV R1,#20
 	BL DRAW_IMAGE
+	
 	;Draw MORNING
 	;bl DRAW_MORNING
 
@@ -73,7 +75,7 @@ STOP B STOP
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SETUP
-	PUSH {R0-R2,LR}
+	PUSH {R0-R2, LR}
 	;to enable port A
 	LDR R0 ,=RCC_BASE + RCC_APB2ENR 
 	LDR R1,[R0]
@@ -96,8 +98,12 @@ SETUP
 	
 	POP {R0-R2,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	LTORG
+
 DRAW_IMAGE
+	; r0 - dx
+	; r1 - dy
+	; r9 - table address
+
     PUSH {R0-R12, LR}
 	
     MOV R5, R0         ; base x

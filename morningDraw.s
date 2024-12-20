@@ -6,15 +6,16 @@
 
 DRAW_MORNING
     PUSH {R0-R12, LR}
-;sky
+
+	; sky
     MOV R0, #0
     MOV R1, #0
     MOV R3, #480
     MOV R4, #320
-    MOV R10, #19902 ;please add colours into the data segment
+    MOV R10, #19902
     BL DRAW_RECTANGLE_FILLED
 
-;land
+	; land
     MOV R0, #0
     MOV R1, #210
     MOV R3, #480
@@ -22,8 +23,7 @@ DRAW_MORNING
     MOV R10, #32390
     BL DRAW_RECTANGLE_FILLED
 
-;clouds1
-DRAW_CLOUD1
+	; draw cloud1
     LDR R9, =CLOUD1_TABLE
     MOV R0, #10
     MOV R1, #50
@@ -45,8 +45,7 @@ DRAW_CLOUD1
     MOV R1, #60
     BL DRAW_IMAGE
 
-;clouds2
-DRAW_CLOUD2
+	; draw cloud2
     LDR R9, =CLOUD2_TABLE
     MOV R0, #170
     MOV R1, #60
@@ -64,25 +63,23 @@ DRAW_CLOUD2
     MOV R1, #70
     BL DRAW_IMAGE
 
-;touchgrass
-DRAW_GRASS
+	; draw glass
     LDR R9, =GRASS_TABLE
     MOV R0, #0
     MOV R1, #210
 GRASS_LOOP
     BL DRAW_IMAGE
-    ADD R0, #20
+    ADD R0, R0, #20
     CMP R0, #480
     BNE GRASS_LOOP
 
-;growdaTREES
-DRAW_TREES
+	; draw trees
     LDR R9, =TREES_TABLE
     MOV R0, #0
     MOV R1, #175
 TREES_LOOP
     BL DRAW_IMAGE
-    ADD R0, #40
+    ADD R0, R0, #40
     CMP R0, #480
     BNE TREES_LOOP
 
