@@ -57,7 +57,6 @@ __main FUNCTION
 	;BL RTC_READ
 	;B kofta
 
-	LDR R9, =TREES_TABLE
 	MOV R0,#20
 	MOV R1,#20
 	BL DRAW_IMAGE
@@ -109,6 +108,7 @@ DRAW_IMAGE
     MOV R5, R0         ; base x
     MOV R6, R1         ; base y
 
+	LDR R9, =TREES_TABLE
     MOV R11, #0X1FF
 
 DRAW_LOOP
