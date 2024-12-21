@@ -85,23 +85,23 @@ RTC_INIT FUNCTION
 	LDR R11,=TFT_INTERVAL
 	BL DELAY
 	
-	;Enabling LSE
-	LDR R0,=RCC_BASE + RCC_BDCR
+	;Enabling LSI
+	LDR R0,=RCC_BASE + RCC_CSR
 	MOV R2,#0
 	BL set_pin
 	
-	BL waitLSE
+	BL waitLSI
 	
-	;Setting RTCSEL[1:0] to 01 (LSE)
+	;Setting RTCSEL[1:0] to 10 (LSI)
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL1
-	BL reset_pin
+	BL set_pin
 	
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL0
-	BL set_pin
-	;Setting RTCEN
+	BL reset_pin
 	
+	;Setting RTCEN
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCEN
 	BL set_pin
@@ -112,17 +112,17 @@ RTC_INIT FUNCTION
 	BL waitRTC
 	BL set_pin
 	
-	;Enabling Seconds Interrupt
-	LDR R0,=RTC_BASE + RTC_CRH
- 	MOV R2,#0
-  	BL waitRTC
-   	BL set_pin
+	;;Enabling Seconds Interrupt
+	;LDR R0,=RTC_BASE + RTC_CRH
+ 	;MOV R2,#0
+  	;BL waitRTC
+   	;BL set_pin
 	
-;	;Clearing Seconds Flag
-;	LDR R0,=RTC_BASE + RTC_CRL
-;	MOV R2,#0
-;	BL waitRTC
-;	BL reset_pin
+	;Clearing Seconds Flag
+	LDR R0,=RTC_BASE + RTC_CRL
+	MOV R2,#0
+	BL waitRTC
+	BL reset_pin
 	
 	;Clearing RSF Bit
 	LDR R0,=RTC_BASE + RTC_CRL
@@ -132,7 +132,7 @@ RTC_INIT FUNCTION
 	
 	;RTC prescaler load (calibration)
 	LDR R0,=RTC_BASE + RTC_PRLL
-	MOV R2,#0x7FFF
+	MOV R2,#0x9C3F
 	BL waitRTC
 	STR R2,[R0]
 	
@@ -201,9 +201,9 @@ __loopback1
 	BEQ __loopback1
 	POP {R0-R3, PC}
 	
-waitLSE
+waitLSI
 	PUSH {R0-R3, LR}
-	LDR R0,=RCC_BASE + RCC_BDCR
+	LDR R0,=RCC_BASE + RCC_CSR
 __loopback2
 	LDR R1,[R0]
 	AND R1, R1,#0x2
