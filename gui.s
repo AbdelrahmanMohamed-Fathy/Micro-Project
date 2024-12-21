@@ -23,8 +23,8 @@ Temp_pos_y			EQU	10
 	EXPORT DRAW_TIME
 	EXPORT ERASE_TIME
 		
-	EXPORT DRAW_TEMP
-	EXPORT ERASE_TEMP
+	EXPORT DRAW_TEMPERATURE
+	EXPORT ERASE_TEMPERATURE
 		
 	EXPORT DRAW_DATE
 	EXPORT ERASE_DATE
@@ -82,15 +82,31 @@ ERASE_TIME FUNCTION
 	POP {R0-R12,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DRAW_TEMP FUNCTION
+DRAW_TEMPERATURE FUNCTION
 	;R11: Temp
 	;Color: R10
 	PUSH {R0-R12,LR}
-	
+	LDR R0,=Temp_pos_x
+	LDR R1,=Temp_pos_y
+	MOV R6,R11
+	MOV R7,#10
+	BL REM
+	BL DIGIT_TO_ASCII
+	BL DRAW
+	ADD R0,#Char_small_size_x
+	MOV R2,R5
+	BL DIGIT_TO_ASCII
+	BL DRAW
+	ADD R0,#Char_small_size_x
+	MOV R2,#1000
+	BL DRAW
+	ADD R0,#Char_small_size_x
+	MOV R2,#'C'
+	BL DRAW
 	POP {R0-R12,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ERASE_TEMP FUNCTION
+ERASE_TEMPERATURE FUNCTION
 	;R8: Day:1 Night:0 Input
 	PUSH {R0-R12,LR}
 	MOV R0,#Temp_pos_x

@@ -52,7 +52,8 @@ SENSOR_INIT FUNCTION
 SENSOR_READ FUNCTION
 	;outputs sensor data to R2
 	;R2: sensor data output
-	PUSH {R0,R1,R3-R4,R11,LR}
+	;R11: Temp output
+	PUSH {R0-R4,LR}
 	
 	;Setting B9 to output at 50MHZ
 	LDR R0,=GPIOB_BASE + GPIOx_CRH
@@ -152,7 +153,7 @@ __CHECKSUM
 	
 	;TODO Verify message
 	
-	POP {R0,R1,R3-R4,R11,PC}
+	POP {R0-R4,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 __PULL_DOWN_WAIT

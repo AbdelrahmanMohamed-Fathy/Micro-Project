@@ -47,8 +47,8 @@ LETTER_SPACING EQU 15
 	IMPORT DRAW_TIME
 	IMPORT ERASE_TIME
 	
-	IMPORT DRAW_TEMP
-	IMPORT ERASE_TEMP
+	IMPORT DRAW_TEMPERATURE
+	IMPORT ERASE_TEMPERATURE
 	
 	IMPORT DRAW_DATE
 	IMPORT ERASE_DATE
@@ -70,14 +70,23 @@ __main FUNCTION
 	BL BREAK_TIME
 	MOV R9,R3 ;Prev Minutes
 	MOV R10,#WHITE
+	BL SENSOR_READ
+	MOV R12,R11
 	BL REFRESH_ALL
 __main_loop
 	;Reads Time into R2
 	BL RTC_READ
 	
+	BL SENSOR_READ
+	CMP R12,R11
+	BEQ	__SKIP_SENSOR
+	MOV R12,R11
+	BL REFRESH_TEMPERATURE
+__SKIP_SENSOR
+	
 	BL BREAK_TIME
 	CMP R9,R3
-	BEQ __SKIP
+	BEQ __SKIP_THEME
 	MOV R9,R3
 	MVN R8,R8
 	AND R8,#1
@@ -87,16 +96,8 @@ __main_loop
 	BLEQ DRAW_NIGHT
 	MOV R10,#WHITE
 	BL REFRESH_ALL
-__SKIP
-	; R0: x
-	; R1: y
-	; R2: ASCII character
-	; R10: color
-	;MOV R0, #240
-	;MOV R1, #130
-	;MOV R10,#WHITE
-	;BL DRAW
-	
+__SKIP_THEME
+
 	B __main_loop
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -135,7 +136,7 @@ REFRESH_ALL
 	PUSH {R0-R12,LR}
 	
 	BL REFRESH_TIME
-	BL REFRESH_TEMP
+	BL REFRESH_TEMPERATURE
 	BL REFRESH_DATE
 	
 	POP {R0-R12,PC}
@@ -152,14 +153,14 @@ REFRESH_TIME
 	
 	POP {R0-R12,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_TEMP
+REFRESH_TEMPERATURE
 	;R11: Temp
 	;R8: Day:1 Night:0
 	;R10: Color input
 	PUSH {R0-R12,LR}
 	
-	;BL 
-	;BL 
+	BL ERASE_TEMPERATURE
+	BL DRAW_TEMPERATURE
 	
 	POP {R0-R12,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
