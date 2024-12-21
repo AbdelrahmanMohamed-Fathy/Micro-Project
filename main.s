@@ -121,7 +121,7 @@ SETUP
 	;Initializing TFT LCD
 	BL LCD_INIT
 	BL RTC_INIT
-	;BL SENSOR_INIT
+	BL SENSOR_INIT
 	
 	POP {R0-R2,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
