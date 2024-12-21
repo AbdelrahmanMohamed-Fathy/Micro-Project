@@ -54,36 +54,25 @@ __main FUNCTION
 	;CALL FUNCTION SETUP
 	BL SETUP
 
-	;RTC test
-kofta
+__main_loop
+	;Reads Time into R2
 	BL RTC_READ
-	B kofta
-		
-	;Draw MORNING
+	
+	;Draw Background
 	BL DRAW_MORNING
-
+	AND R2,#1
+	BL DIGIT_TO_ASCII
 	; R0: x
 	; R1: y
 	; R2: ASCII character
 	; R10: color
-
 	MOV R0, #240
 	MOV R1, #160
-	MOV R2, # ':'
-	MOV R10, #0
+	MOV R10,#WHITE
 	BL DRAW
-
-	;Draw NIGHT
-	;BL DRAW_NIGHT
-
-	;MOV R2,#0
-	;BL SENSOR_READ
-	;MOV R3,R2
 	
-STOP B STOP
-
+	B __main_loop
 	ENDFUNC
-	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SETUP
 	PUSH {R0-R2, LR}
