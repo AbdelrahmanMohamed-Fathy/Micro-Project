@@ -28,8 +28,12 @@ BKPEN		EQU 27	;BKP Enable
 PWREN		EQU 28	;PWR Enable
 
 
+TFT_INTERVAL 	EQU 0x4FFFFF
+
 	EXPORT RTC_INIT
 	EXPORT RTC_READ
+	
+	IMPORT DELAY
 	
 	AREA	MYCODE, CODE, READONLY
 	
@@ -44,11 +48,13 @@ RTC_READ FUNCTION
 	LDR R0,=RTC_BASE + RTC_CNTL
 	LDR R2,[R0]
 	ADD R2,R2,R1
+	LDR R0,=RTC_BASE + RTC_CRL
+	LDR R3,[R0]
 	POP {R0-R1,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 RTC_INIT FUNCTION
-	PUSH {R0-R3,LR}
+	PUSH {R0-R3,R11,LR}
 	
 	;Enabling PWR and BKP
 	LDR R0,=RCC_BASE + RCC_APB1ENR
@@ -62,36 +68,42 @@ RTC_INIT FUNCTION
 	;Remove protection from backup registers
 	LDR R0,=PWR_BASE + PWR_CR
 	MOV R2,#DBP
-	BL reset_pin
+	BL set_pin
 	
-	;Ressetting BDR
+	;Resetting BDR
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#16
 	BL set_pin
 	
+	LDR R11,=TFT_INTERVAL
+	BL DELAY
+	
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#16
 	BL reset_pin
 	
-	;Enabling LSE
-	LDR R0,=RCC_BASE + RCC_BDCR
+	LDR R11,=TFT_INTERVAL
+	BL DELAY
+	
+	;Enabling LSI
+	LDR R0,=RCC_BASE + RCC_CSR
 	MOV R2,#0
 	BL set_pin
 	
-	BL waitLSE
-	
-	;Setting RTCEN
-	LDR R0,=RCC_BASE + RCC_BDCR
-	MOV R2,#RTCEN
-	BL set_pin
+	BL waitLSI
 	
 	;Setting RTCSEL[1:0] to 10 (LSI)
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL1
-	BL reset_pin
+	BL set_pin
 	
 	LDR R0,=RCC_BASE + RCC_BDCR
 	MOV R2,#RTCSEL0
+	BL reset_pin
+	
+	;Setting RTCEN
+	LDR R0,=RCC_BASE + RCC_BDCR
+	MOV R2,#RTCEN
 	BL set_pin
 	
 	;Enter configuration mode
@@ -100,11 +112,11 @@ RTC_INIT FUNCTION
 	BL waitRTC
 	BL set_pin
 	
-	;Enabling Seconds Interrupt
-	LDR R0,=RTC_BASE + RTC_CRH
- 	MOV R2,#0
-  	BL waitRTC
-   	BL set_pin
+	;;Enabling Seconds Interrupt
+	;LDR R0,=RTC_BASE + RTC_CRH
+ 	;MOV R2,#0
+  	;BL waitRTC
+   	;BL set_pin
 	
 	;Clearing Seconds Flag
 	LDR R0,=RTC_BASE + RTC_CRL
@@ -120,7 +132,7 @@ RTC_INIT FUNCTION
 	
 	;RTC prescaler load (calibration)
 	LDR R0,=RTC_BASE + RTC_PRLL
-	MOV R2,#0x7FFF
+	MOV R2,#0x9C3F
 	BL waitRTC
 	STR R2,[R0]
 	
@@ -129,29 +141,30 @@ RTC_INIT FUNCTION
 	BL waitRTC
 	STR R2,[R0]
 	
-	;;Setting time
-	;LDR R0,=RTC_BASE + RTC_CNTL
-	;lDR R2,=
-	;BL waitRTC
-	;STR R2,[R0]
+	;Setting time
+	LDR R0,=RTC_BASE + RTC_CNTH
+	LDR R2,=0x3333
+	BL waitRTC
+	STR R2,[R0]
 	
-	;LDR R0,=RTC_BASE + RTC_CNTH
-	;lDR R2,=RSF
-	;BL waitRTC
-	;STR R2,[R0]
+	LDR R0,=RTC_BASE + RTC_CNTL
+	LDR R2,=0x3333
+	BL waitRTC
+	STR R2,[R0]
 	
 	;Exit configuration mode
 	LDR R0,=RTC_BASE + RTC_CRL
 	mov R2,#CNF
 	BL waitRTC
 	BL reset_pin
- 
+	
+	BL waitRTC
 	;Protect backup register from write access
 	LDR R0,=PWR_BASE + PWR_CR
 	MOV R2,#DBP
-	BL set_pin
+	BL reset_pin
 	
-	POP {R0-R3,PC}
+	POP {R0-R3,R11,PC}
 	ENDFUNC
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -188,9 +201,9 @@ __loopback1
 	BEQ __loopback1
 	POP {R0-R3, PC}
 	
-waitLSE
+waitLSI
 	PUSH {R0-R3, LR}
-	LDR R0,=RCC_BASE + RCC_BDCR
+	LDR R0,=RCC_BASE + RCC_CSR
 __loopback2
 	LDR R1,[R0]
 	AND R1, R1,#0x2

@@ -34,14 +34,15 @@ LETTER_SPACING EQU 15
 	IMPORT RTC_INIT
 	IMPORT RTC_READ
 	IMPORT DIGIT_TO_ASCII
-	IMPORT REG_TO_BCD
 	IMPORT SENSOR_READ
 	IMPORT SENSOR_INIT
+	IMPORT BREAK_TIME
 
 	IMPORT DRAW
 	IMPORT DRAW_MORNING
 	IMPORT DRAW_NIGHT
-	IMPORT DRAW_LARGE_NUMBER
+	IMPORT DRAW_LARGE
+	IMPORT DRAW_TIME
 	
 	EXPORT DRAW_IMAGE
 	EXPORT __main
@@ -54,36 +55,27 @@ __main FUNCTION
 	;CALL FUNCTION SETUP
 	BL SETUP
 
-	;RTC test
-;kofta
-	;BL RTC_READ
-	;B kofta
-		
-	;Draw MORNING
+__main_loop
+	;Reads Time into R2
+	BL RTC_READ
+	
+	BL BREAK_TIME
+	
+	MOV R10,#WHITE
+	;Draw Background
 	BL DRAW_MORNING
-
+	BL DRAW_TIME
 	; R0: x
 	; R1: y
 	; R2: ASCII character
 	; R10: color
-
-	MOV R0, #240
-	MOV R1, #160
-	MOV R2, #':'
-	MOV R10, #0
-	BL DRAW
-
-	;Draw NIGHT
-	;BL DRAW_NIGHT
-
-	;MOV R2,#0
-	;BL SENSOR_READ
-	;MOV R3,R2
+	;MOV R0, #240
+	;MOV R1, #130
+	;MOV R10,#WHITE
+	;BL DRAW
 	
-STOP B STOP
-
+	B __main_loop
 	ENDFUNC
-	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SETUP
 	PUSH {R0-R2, LR}
@@ -104,7 +96,7 @@ SETUP
 	
 	;Initializing TFT LCD
 	BL LCD_INIT
-	;BL RTC_INIT
+	BL RTC_INIT
 	;BL SENSOR_INIT
 	
 	POP {R0-R2,PC}
