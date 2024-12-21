@@ -102,14 +102,12 @@ DELAY_uS FUNCTION
     BIC R2, R2, #(1 << 0)        ; Clear UIF (update interrupt flag)
     STR R2, [R0]                 ; Write back to TIM2_SR
 
-Wait_Loop:
+Wait_Loop
     LDR R2, [R1]                 ; Read TIM2_CNT
     CMP R2, R4                   ; Compare CNT with delay value
     BLO Wait_Loop                ; Loop until CNT >= delay value
 
     POP {R1-R4, PC}              ; Restore registers
-    BX LR                        ; Return
-
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DIGIT_TO_ASCII FUNCTION
