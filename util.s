@@ -8,8 +8,8 @@ INTERVAL_50uS 		EQU 3600
 INTERVAL_70uS 		EQU 5040
 INTERVAL_80uS 		EQU 5760
 ;TFT_Positions
-Time_pos_x			EQU 92
-Time_pos_y			EQU 91
+Time_pos_x			EQU 90
+Time_pos_y			EQU 75
 Char_big_size_x		EQU 59
 Char_big_size_y		EQU 117
 Char_small_size_x	EQU 15
@@ -116,9 +116,9 @@ BREAK_TIME FUNCTION
 	;R7: Year Output
 	PUSH {R0-R2,LR}
 	MOV R6,R2
-	MOV R7,#3600
+	MOV R7,#60
 	BL REM
-	MOV R3,R5 ;Minutes Done
+	MOV R3,R2 ;Minutes Done
 	PUSH {R3}
 	
 	MOV R6,R2
