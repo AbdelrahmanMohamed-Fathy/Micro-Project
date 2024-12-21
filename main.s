@@ -1,32 +1,35 @@
 ;Bases
-GPIOA_BASE 	EQU 0x40010800
-GPIOB_BASE 	EQU 0X40010C00
-RCC_BASE   	EQU 0x40021000
+GPIOA_BASE 		EQU 0x40010800
+GPIOB_BASE 		EQU 0X40010C00
+RCC_BASE   		EQU 0x40021000
 	
 ;RCC Offsets
-RCC_APB2ENR EQU 0x18
+RCC_APB2ENR 	EQU 0x18
 	
 ;GPIOx Offsets
-GPIOx_CRL 	EQU 0x00
-GPIOx_CRH 	EQU 0x04
-GPIOx_IDR 	EQU 0x08
-GPIOx_ODR 	EQU 0x0C
+GPIOx_CRL 		EQU 0x00
+GPIOx_CRH 		EQU 0x04
+GPIOx_IDR 		EQU 0x08
+GPIOx_ODR 		EQU 0x0C
 	
 ;just some color codes, 16-bit colors coded in RGB 565
-BLACK		EQU 0x0000
-BLUE 		EQU 0x001F
-RED  		EQU 0xF800
-RED2   		EQU 0x4000
-GREEN 		EQU 0x07E0
-CYAN  		EQU 0x07FF
-MAGENTA 	EQU 0xF81F
-YELLOW		EQU 0xFFE0
-WHITE 		EQU 0xFFFF
-GREEN2 		EQU 0x2FA4
-CYAN2 		EQU 0x07FF
+BLACK			EQU 0x0000
+BLUE 			EQU 0x001F
+RED  			EQU 0xF800
+RED2   			EQU 0x4000
+GREEN 			EQU 0x07E0
+CYAN  			EQU 0x07FF
+MAGENTA 		EQU 0xF81F
+YELLOW			EQU 0xFFE0
+WHITE 			EQU 0xFFFF
+GREEN2 			EQU 0x2FA4
+CYAN2 			EQU 0x07FF
 	
 ; Letter spacing
-LETTER_SPACING EQU 15
+LETTER_SPACING 	EQU 15
+	
+;Extra Minutes between theme switch (When zero it changes every minute)
+Time_Offset		EQU 1
 	
 	IMPORT LCD_INIT
 	IMPORT DRAW_RECTANGLE_FILLED
@@ -69,16 +72,19 @@ __main FUNCTION
 	MOV R8,#1
 	BL RTC_READ
 	BL BREAK_TIME
-	MOV R9,R3 ;Prev Minutes
+	MOV R0,R3 ;Time Diff Minutes
+	MOV R9,R3 ;Theme Diff Minutes
+	ADD R9,#Time_Offset 
 	MOV R10,#WHITE
 	;BL SENSOR_READ
-	MOV R11,#23
+	MOV R11,#23	;Debug value for TEMPERATURE print test
 	MOV R12,R11
 	BL REFRESH_ALL
 __main_loop
 	;Reads Time into R2
 	BL RTC_READ
 	
+	;Handling Only Temperature change
 	;BL SENSOR_READ
 	CMP R12,R11
 	BEQ	__SKIP_SENSOR
@@ -87,9 +93,13 @@ __main_loop
 __SKIP_SENSOR
 	
 	BL BREAK_TIME
+	
+	;Handling Full Theme Change
 	CMP R9,R3
 	BEQ __SKIP_THEME
+	MOV R0,R3
 	MOV R9,R3
+	ADD R9,#Time_Offset;
 	MVN R8,R8
 	AND R8,#1
 	CMP R8,#1
@@ -98,8 +108,15 @@ __SKIP_SENSOR
 	BLEQ DRAW_NIGHT
 	MOV R10,#WHITE
 	BL REFRESH_ALL
+	B __SKIP_ALL
 __SKIP_THEME
 
+	;Handling Only Time Change
+	CMP R0,R3
+	BEQ __SKIP_ALL
+	BL REFRESH_TIME
+	BL REFRESH_DATE
+__SKIP_ALL
 	B __main_loop
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
