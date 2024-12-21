@@ -75,8 +75,8 @@ __main FUNCTION
 	MOV R9,R3 ;Theme Diff Minutes
 	ADD R9,#Time_Offset 
 	MOV R10,#WHITE
-	;BL SENSOR_READ
-	MOV R11,#23	;Debug value for TEMPERATURE print test
+	BL SENSOR_READ
+	;MOV R11,#23	;Debug value for TEMPERATURE print test
 	MOV R12,R11
 	BL REFRESH_ALL
 __main_loop
@@ -84,7 +84,7 @@ __main_loop
 	BL RTC_READ
 	
 	;Handling Only Temperature change
-	;BL SENSOR_READ
+	BL SENSOR_READ
 	CMP R12,R11
 	BEQ	__SKIP_SENSOR
 	MOV R12,R11
