@@ -125,6 +125,7 @@ DRAW_DATE FUNCTION
 	;Color: R10
 	PUSH {R0-R12,LR}
 	;Drawing the Day/Month
+	PUSH {R7}
 	LDR R0,=Month_pos_x
 	LDR R1,=Month_pos_y
 	MOV R6,R5
@@ -140,6 +141,7 @@ DRAW_DATE FUNCTION
 	BL DRAW_DEC
 	
 	;Drawing Year
+	POP {R7}
 	LDR R0,=Year_pos_x
 	LDR R1,=Year_pos_y
 	MOV R6,R7
@@ -208,14 +210,13 @@ DRAW_DEC
     PUSH {R0-R12, LR}
     MOV R2, #'D'
     BL DRAW
-    ADD R0, R0, Char_small_size_x
+    ADD R0, R0, #Char_small_size_x
     MOV R2, #'e'
     BL DRAW
-    ADD R0, R0, Char_small_size_x
+    ADD R0, R0, #Char_small_size_x
     MOV R2, #'c'
     BL DRAW
-    ADD R0, R0, Char_small_size_x
-    POP {R0-R12, PC}
+    ADD R0, R0, #Char_small_size_x
+    POP {R0-R12, PC}	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	
 	END
