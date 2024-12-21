@@ -27,7 +27,7 @@ Temp_pos_y			EQU	10
 RCC_BASE   	EQU 0x40021000
 	
 ;RCC Offsets
-RCC_APB1ENR EQu 0x1C
+RCC_APB1ENR EQU 0x1C
 RCC_APB2ENR EQU 0x18
 	
 ;GPIOx Offsets
@@ -100,7 +100,7 @@ Wait_Overflow
         POP {R1-R2, PC}
         BX LR
 
-		ENDUFNC
+		ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DIGIT_TO_ASCII FUNCTION
 	;takes number in R2 and turns it to ASCII

@@ -57,16 +57,27 @@ __main FUNCTION
 	BL SETUP
 	;Draw Background
 	BL DRAW_MORNING
+	MOV R8,#1
+	BL RTC_READ
+	BL BREAK_TIME
+	MOV R9,R3 ;Prev Minutes
 __main_loop
 	;Reads Time into R2
 	BL RTC_READ
 	
 	BL BREAK_TIME
-	MOV R8,#1
+	CMP R9,R3
+	BEQ __SKIP
+	MVN R8,R8
+	AND R8,#1
+	CMP R8,#1
+	BLEQ DRAW_MORNING
+	CMP R8,#0
+	BLEQ DRAW_NIGHT
 	BL ERASE_TIME
-
 	MOV R10,#WHITE
 	BL DRAW_TIME
+__SKIP
 	; R0: x
 	; R1: y
 	; R2: ASCII character
