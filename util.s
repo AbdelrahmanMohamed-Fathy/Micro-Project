@@ -43,6 +43,7 @@ GPIOx_ODR 	EQU 0x0C
 	EXPORT ERASE_TIME
 	EXPORT DELAY_uS	
 	IMPORT DRAW_LARGE
+	IMPORT DRAW_RECTANGLE_FILLED
 	
 	AREA  MYCODE, CODE, READONLY
 		
@@ -211,6 +212,8 @@ BREAK_TIME FUNCTION
 	POP {R6}
 	POP {R7}
 	
+	ADD R7,#1970
+	
 	POP {R0-R2,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -218,8 +221,22 @@ ERASE_TIME FUNCTION
 	;R8: Day:1 Night:0 Input
 	PUSH {R0-R12,LR}
 	
+	MOV R0,#Time_pos_x
+	MOV R1,#Time_pos_y
+	MOV R3,#Time_pos_x + (Char_big_size_x*4)
+	MOV R4,#Time_pos_y + Char_big_size_y
+	CMP R8,#1
+	BNE __NIGHT
 	
+__DAY
+	MOV R10,#19902
+	B __ERASE_OUT
+__NIGHT
+	MOV R10,#0
+	B __ERASE_OUT
 	
+__ERASE_OUT
+	BL DRAW_RECTANGLE_FILLED
 	POP {R0-R12,PC}
 	ENDFUNC
 	END
