@@ -7,9 +7,39 @@ GPIOx_ODR		EQU 0x0C
 	IMPORT DELAY_uS
 	EXPORT SENSOR_READ
 	EXPORT SENSOR_INIT
+	EXPORT TIM2_INIT
 
 
 	AREA mycode, CODE, READONLY
+
+TIM2_INIT FUNCTION
+
+	PUSH{R0-R1,LR}
+    LDR R0, =0x40021018          ; RCC_APB1ENR address
+    LDR R1, [R0]                 ; Load RCC_APB1ENR
+    ORR R1, R1, #(1 << 0)        ; Enable TIM2 clock (bit 0)
+    STR R1, [R0]                 ; Store back RCC_APB1ENR
+
+    LDR R0, =0x40000028          ; TIM2_PSC address
+    LDR R1, =72 - 1              ; Set prescaler value (PSC = 72-1 for 1 MHz)
+    STR R1, [R0]                 ; Store prescaler value in TIM2_PSC
+
+    LDR R0, =0x4000002C          ; TIM2_ARR address
+    LDR R1, =0xFFFF              ; Set auto-reload value to maximum (optional)
+    STR R1, [R0]                 ; Store ARR value in TIM2_ARR
+
+    LDR R0, =0x40000010          ; TIM2_SR address
+    LDR R1, [R0]                 ; Clear UIF flag (bit 0)
+    BIC R1, R1, #(1 << 0)        ; Clear update interrupt flag
+    STR R1, [R0]                 ; Write back to TIM2_SR
+
+    LDR R0, =0x40000000          ; TIM2_CR1 address
+    LDR R1, [R0]                 ; Load TIM2_CR1
+    ORR R1, R1, #1               ; Enable TIM2 (CEN bit = 1)
+    STR R1, [R0]                 ; Write back to TIM2_CR1
+
+	POP {R0-R1,PC}
+	ENDFUNC
 		
 SENSOR_INIT FUNCTION
 	PUSH {R0-R2,LR}

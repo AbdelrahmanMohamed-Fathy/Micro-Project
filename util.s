@@ -90,50 +90,27 @@ DELAY_LOOP
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DELAY_uS FUNCTION
-        ; Input: R11 = delay duration in microseconds
-        ; Preserve registers
-        PUSH {R1-R2, LR}
+    ; Input: R11 = delay duration in microseconds
+    ; Preserve registers
+	PUSH {R1-R4, LR}                ; Save registers
+    LDR R1, =0x40000024          ; TIM2_CNT address
+    MOV R4, R11                   ; Load delay value (in R0) into R4
 
-        ; Enable TIM2 Clock
-        LDR R1, =0x40021000       ; Base address of RCC
-        LDR R2, [R1, #0x1C]       ; Offset to RCC_APB1ENR
-        ORR R2, R2, #(1 << 0)     ;Enable TIM2 (bit 0)
-        STR R2, [R1]
+    ; Reset the counter
+    LDR R0, =0x40000010          ; TIM2_SR address
+    LDR R2, [R0]                 ; Load TIM2_SR
+    BIC R2, R2, #(1 << 0)        ; Clear UIF (update interrupt flag)
+    STR R2, [R0]                 ; Write back to TIM2_SR
 
-        ; Configure Prescaler for 1 µs tick
-        LDR R1, =0x40000000       ; Base address of TIM2
-        LDR R2, =7                ; Prescaler value (8-1 for 1 µs with 8 MHz clock)
-        STR R2, [R1, #0x28]       ; Write to TIM2_PSC (offset 0x28)
+Wait_Loop:
+    LDR R2, [R1]                 ; Read TIM2_CNT
+    CMP R2, R4                   ; Compare CNT with delay value
+    BLO Wait_Loop                ; Loop until CNT >= delay value
 
-        ; Set ARR to the delay value
-        STR R11, [R1, #0x2C]       ; Write delay (R0) to TIM2_ARR
+    POP {R1-R4, PC}              ; Restore registers
+    BX LR                        ; Return
 
-        ; Start the Timer
-        LDR R2, [R1, #0x00]       ; Read TIM2_CR1
-        ORR R2, R2, #1            ; Set CEN (bit 0) to enable the counter
-        STR R2, [R1, #0x00]
-
-Wait_Overflow
-        ; Wait for Update Interrupt Flag (UIF)
-        LDR R2, [R1, #0x10]       ; Read TIM2_SR
-        TST R2, #(1 << 0)         ; Check UIF (bit 0)
-        BEQ Wait_Overflow         ; Loop until UIF is set
-
-        ; Clear UIF Flag
-        LDR R2, [R1, #0x10]
-        BIC R2, R2, #(1 << 0)     ; Clear UIF by writing 0
-        STR R2, [R1, #0x10]
-
-        ; Stop the Timer
-        LDR R2, [R1, #0x00]       ; Read TIM2_CR1
-        BIC R2, R2, #1            ; Clear CEN (bit 0) to disable the counter
-        STR R2, [R1, #0x00]
-
-        ; Restore registers and return
-        POP {R1-R2, PC}
-        BX LR
-
-		ENDFUNC
+	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DIGIT_TO_ASCII FUNCTION
 	;takes number in R2 and turns it to ASCII
