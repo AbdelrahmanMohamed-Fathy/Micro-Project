@@ -106,7 +106,8 @@ SENSOR_READ FUNCTION
 	
 ; Extract and copy temperature data to R11
     LSR R11, R2, #16     ;Shift temperature data (bits 16-31) into R11
-    AND R11, R11, #0xFFFF ;Mask to ensure only 16 bits for temperature
+	MOV R1,#0xFFFF
+    AND R11, R11, R1 ;Mask to ensure only 16 bits for temperature
 	
 ;Waiting for start message
 	BL __PULL_DOWN_WAIT
