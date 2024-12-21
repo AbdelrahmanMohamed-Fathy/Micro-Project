@@ -28,8 +28,8 @@ CYAN2 			EQU 0x07FF
 ; Letter spacing
 LETTER_SPACING 	EQU 15
 	
-;Extra Minutes between theme switch (Theme changes after Time_Offset+1)
-Time_Offset		EQU 1
+;Minutes between theme switch (Theme changes after Time_Offset)
+Time_Offset		EQU 2
 	
 	IMPORT LCD_INIT
 	IMPORT DRAW_RECTANGLE_FILLED
