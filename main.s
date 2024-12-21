@@ -77,6 +77,7 @@ __main_loop
 	BL BREAK_TIME
 	CMP R9,R3
 	BEQ __SKIP
+	MOV R9,R3
 	MVN R8,R8
 	AND R8,#1
 	CMP R8,#1
