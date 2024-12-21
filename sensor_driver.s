@@ -15,28 +15,24 @@ GPIOx_ODR		EQU 0x0C
 TIM2_INIT FUNCTION
 
 	PUSH{R0-R1,LR}
-    LDR R0, =0x40021018          ; RCC_APB1ENR address
-    LDR R1, [R0]                 ; Load RCC_APB1ENR
-    ORR R1, R1, #0x01       	 ; Enable TIM2 clock (bit 0)
-    STR R1, [R0]                 ; Store back RCC_APB1ENR
+    LDR R0, =0x40021000       ; RCC base address
+    LDR R1, [R0, #0x1C]       ; RCC_APB1ENR address
+    ORR R1, R1, #1            ; Enable TIM2 clock (bit 0)
+    STR R1, [R0, #0x1C]       ; Write back to RCC_APB1ENR
 
-    LDR R0, =0x40000028          ; TIM2_PSC address
-    LDR R1, =72             	 ; Set prescaler value (PSC = 72-1 for 1 MHz)
-    STR R1, [R0]                 ; Store prescaler value in TIM2_PSC
+    LDR R0, =0x40000000       ; TIM2 base address
+    LDR R1, #71               ; Prescaler value (PSC = 71)
+    STR R1, [R0, #0x28]       ; Write to TIM2_PSC
+    LDR R1, #999              ; Auto-reload value (ARR = 999)
+    STR R1, [R0, #0x2C]       ; Write to TIM2_ARR
 
-    LDR R0, =0x4000002C          ; TIM2_ARR address
-    LDR R1, =0xFFFF              ; Set auto-reload value to maximum (optional)
-    STR R1, [R0]                 ; Store ARR value in TIM2_ARR
+    LDR R1, [R0, #0x0C]       ; Read TIM2_DIER
+    ORR R1, R1, #1            ; Enable update interrupt (UIE)
+    STR R1, [R0, #0x0C]       ; Write back to TIM2_DIER
 
-    LDR R0, =0x40000010          ; TIM2_SR address
-    LDR R1, [R0]                 ; Clear UIF flag (bit 0)
-    BIC R1, R1, #0x01        	 ; Clear update interrupt flag
-    STR R1, [R0]                 ; Write back to TIM2_SR
-
-    LDR R0, =0x40000000          ; TIM2_CR1 address
-    LDR R1, [R0]                 ; Load TIM2_CR1
-    ORR R1, R1, #1               ; Enable TIM2 (CEN bit = 1)
-    STR R1, [R0]                 ; Write back to TIM2_CR1
+    LDR R1, [R0, #0x00]       ; Read TIM2_CR1
+    ORR R1, R1, #1            ; Enable TIM2 counter (CEN)
+    STR R1, [R0, #0x00]       ; Write back to TIM2_CR1
 
 	POP {R0-R1,PC}
 	ENDFUNC
