@@ -135,6 +135,7 @@ DRAW_DATE FUNCTION
 	ADD R8, R8, R5
 	MOV R6,R8
 	MOV R7,#7
+	BL REM
 	MOV R8,R5
 	LDR R0,=Day_pos_x
 	LDR R1,=Day_pos_y
@@ -222,17 +223,6 @@ __COLOR_OUT
 	POP {R0-R9,R11-R12,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DRAW_DEC
-    PUSH {R0-R12, LR}
-    MOV R2, #'D'
-    BL DRAW
-    ADD R0, R0, #Char_small_size_x
-    MOV R2, #'e'
-    BL DRAW
-    ADD R0, R0, #Char_small_size_x
-    MOV R2, #'c'
-    BL DRAW
-    ADD R0, R0, #Char_small_size_x
-    POP {R0-R12, PC}	
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 	END
