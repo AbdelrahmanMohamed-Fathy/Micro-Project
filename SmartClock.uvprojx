@@ -434,6 +434,11 @@
               <FileType>2</FileType>
               <FilePath>.\month.s</FilePath>
             </File>
+            <File>
+              <FileName>day.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\day.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
