@@ -96,7 +96,7 @@ __SKIP_SENSOR
 	
 	;Handling Full Theme Change
 	CMP R9,R3
-	BEQ __SKIP_THEME
+	BNE __SKIP_THEME
 	MOV R0,R3
 	MOV R9,R3
 	ADD R9,#Time_Offset;
