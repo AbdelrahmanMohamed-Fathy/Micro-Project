@@ -97,7 +97,7 @@ DELAY_uS FUNCTION
         ; Enable TIM2 Clock
         LDR R1, =0x40021000       ; Base address of RCC
         LDR R2, [R1, #0x1C]       ; Offset to RCC_APB1ENR
-        ORR R2, R2, #(1 << 0)     :Enable TIM2 (bit 0)
+        ORR R2, R2, #(1 << 0)     ;Enable TIM2 (bit 0)
         STR R2, [R1]
 
         ; Configure Prescaler for 1 µs tick
