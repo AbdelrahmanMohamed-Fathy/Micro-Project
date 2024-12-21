@@ -7,6 +7,7 @@ INTERVAL_40uS 		EQU 2880
 INTERVAL_50uS 		EQU 3600
 INTERVAL_70uS 		EQU 5040
 INTERVAL_80uS 		EQU 5760
+
 ;TFT_Positions
 Time_pos_x			EQU 90
 Time_pos_y			EQU 75
@@ -22,12 +23,27 @@ Year_pos_y			EQU 62
 Temp_pos_x			EQU 414
 Temp_pos_y			EQU	10
 
+;Bases
+RCC_BASE   	EQU 0x40021000
+	
+;RCC Offsets
+RCC_APB1ENR EQU 0x1C
+RCC_APB2ENR EQU 0x18
+	
+;GPIOx Offsets
+GPIOx_CRL 	EQU 0x00
+GPIOx_CRH 	EQU 0x04
+GPIOx_IDR 	EQU 0x08
+GPIOx_ODR 	EQU 0x0C
+
 	EXPORT DELAY
 	EXPORT DIGIT_TO_ASCII
 	EXPORT DRAW_TIME
 	EXPORT BREAK_TIME
-		
+	EXPORT ERASE_TIME
+	EXPORT DELAY_uS	
 	IMPORT DRAW_LARGE
+	IMPORT DRAW_RECTANGLE_FILLED
 	
 	AREA  MYCODE, CODE, READONLY
 		
@@ -40,6 +56,51 @@ DELAY_LOOP
 	BGT DELAY_LOOP
 	POP {R11, PC}
 	ENDFUNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DELAY_uS FUNCTION
+        ; Input: R11 = delay duration in microseconds
+        ; Preserve registers
+        PUSH {R1-R2, LR}
+
+        ; Enable TIM2 Clock
+        LDR R1, =RCC_BASE + RCC_APB1ENR      ; Offset to RCC_APB1ENR
+        ORR R2, R2, #(1 << 0)     			 ; Enable TIM2 (bit 0)
+        STR R2, [R1]
+
+        ; Configure Prescaler for 1 µs tick
+        LDR R1, =0x40000000       ; Base address of TIM2
+        LDR R2, =7                ; Prescaler value (8-1 for 1 µs with 8 MHz clock)
+        STR R2, [R1, #0x28]       ; Write to TIM2_PSC (offset 0x28)
+
+        ; Set ARR to the delay value
+        STR R11, [R1, #0x2C]       ; Write delay (R0) to TIM2_ARR
+
+        ; Start the Timer
+        LDR R2, [R1, #0x00]       ; Read TIM2_CR1
+        ORR R2, R2, #1            ; Set CEN (bit 0) to enable the counter
+        STR R2, [R1, #0x00]
+
+Wait_Overflow
+        ; Wait for Update Interrupt Flag (UIF)
+        LDR R2, [R1, #0x10]       ; Read TIM2_SR
+        TST R2, #(1 << 0)         ; Check UIF (bit 0)
+        BEQ Wait_Overflow         ; Loop until UIF is set
+
+        ; Clear UIF Flag
+        LDR R2, [R1, #0x10]
+        BIC R2, R2, #(1 << 0)     ; Clear UIF by writing 0
+        STR R2, [R1, #0x10]
+
+        ; Stop the Timer
+        LDR R2, [R1, #0x00]       ; Read TIM2_CR1
+        BIC R2, R2, #1            ; Clear CEN (bit 0) to disable the counter
+        STR R2, [R1, #0x00]
+
+        ; Restore registers and return
+        POP {R1-R2, PC}
+        BX LR
+
+		ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DIGIT_TO_ASCII FUNCTION
 	;takes number in R2 and turns it to ASCII
@@ -151,7 +212,31 @@ BREAK_TIME FUNCTION
 	POP {R6}
 	POP {R7}
 	
+	ADD R7,#1970
+	
 	POP {R0-R2,PC}
 	ENDFUNC
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ERASE_TIME FUNCTION
+	;R8: Day:1 Night:0 Input
+	PUSH {R0-R12,LR}
+	
+	MOV R0,#Time_pos_x
+	MOV R1,#Time_pos_y
+	MOV R3,#Time_pos_x + (Char_big_size_x*5)
+	MOV R4,#Time_pos_y + Char_big_size_y - 15
+	CMP R8,#1
+	BNE __NIGHT
+	
+__DAY
+	MOV R10,#19902
+	B __ERASE_OUT
+__NIGHT
+	MOV R10,#0
+	B __ERASE_OUT
+	
+__ERASE_OUT
+	BL DRAW_RECTANGLE_FILLED
+	POP {R0-R12,PC}
+	ENDFUNC
 	END
