@@ -28,7 +28,6 @@ CYAN2 		EQU 0x07FF
 ; Letter spacing
 LETTER_SPACING EQU 15
 	
-	;IMPORT DELAY
 	IMPORT LCD_INIT
 	IMPORT DRAW_RECTANGLE_FILLED
 	IMPORT RTC_INIT
@@ -44,6 +43,15 @@ LETTER_SPACING EQU 15
 	IMPORT DRAW_NIGHT
 	IMPORT DRAW_LARGE
 	IMPORT DRAW_TIME
+		
+	IMPORT DRAW_TIME
+	IMPORT ERASE_TIME
+	
+	IMPORT DRAW_TEMP
+	IMPORT ERASE_TEMP
+	
+	IMPORT DRAW_DATE
+	IMPORT ERASE_DATE
 	
 	EXPORT DRAW_IMAGE
 	EXPORT __main
@@ -75,9 +83,8 @@ __main_loop
 	BLEQ DRAW_MORNING
 	CMP R8,#0
 	BLEQ DRAW_NIGHT
-	BL ERASE_TIME
 	MOV R10,#WHITE
-	BL DRAW_TIME
+	BL REFRESH_ALL
 __SKIP
 	; R0: x
 	; R1: y
@@ -115,7 +122,58 @@ SETUP
 	
 	POP {R0-R2,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+REFRESH_ALL
+	;R3: Minutes Input
+	;R4: Hours Input
+	;R5: Day Input
+	;R6: Month Input
+	;R7: Year Input
+	;R8: Day:1 Night:0
+	;R10: Test Color
+	PUSH {R0-R12,LR}
+	
+	BL REFRESH_TIME
+	BL REFRESH_TEMP
+	BL REFRESH_DATE
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_TIME
+	;R3: Mintues Input
+	;R4: Hours Input
+	;R8: Day:1 Night:0
+	;R10: Color input
+	PUSH {R0-R12,LR}
+	
+	BL ERASE_TIME
+	BL DRAW_TIME
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_TEMP
+	;R11: Temp
+	;R8: Day:1 Night:0
+	;R10: Color input
+	PUSH {R0-R12,LR}
+	
+	;BL 
+	;BL 
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_DATE
+	;R5: Day Input
+	;R6: Month Input
+	;R7: Year Input
+	;R8: Day:1 Night:0
+	;R10: Color input
+	PUSH {R0-R12,LR}
+	
+	BL ERASE_DATE
+	BL DRAW_DATE
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DRAW_IMAGE
 	; r0 - dx
 	; r1 - dy
