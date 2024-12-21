@@ -141,16 +141,16 @@ RTC_INIT FUNCTION
 	BL waitRTC
 	STR R2,[R0]
 	
-	;Setting time
-	LDR R0,=RTC_BASE + RTC_CNTH
-	LDR R2,=0x65EC
-	BL waitRTC
-	STR R2,[R0]
-	
-	LDR R0,=RTC_BASE + RTC_CNTL
-	LDR R2,=0xCDD0
-	BL waitRTC
-	STR R2,[R0]
+	;;Setting time
+	;LDR R0,=RTC_BASE + RTC_CNTH
+	;LDR R2,=0x65EC
+	;BL waitRTC
+	;STR R2,[R0]
+	;
+	;LDR R0,=RTC_BASE + RTC_CNTL
+	;LDR R2,=0xCDD0
+	;BL waitRTC
+	;STR R2,[R0]
 	
 	;Exit configuration mode
 	LDR R0,=RTC_BASE + RTC_CRL
