@@ -223,8 +223,8 @@ ERASE_TIME FUNCTION
 	
 	MOV R0,#Time_pos_x
 	MOV R1,#Time_pos_y
-	MOV R3,#Time_pos_x + (Char_big_size_x*4)
-	MOV R4,#Time_pos_y + Char_big_size_y
+	MOV R3,#Time_pos_x + (Char_big_size_x*5)
+	MOV R4,#Time_pos_y + Char_big_size_y - 15
 	CMP R8,#1
 	BNE __NIGHT
 	
