@@ -43,7 +43,8 @@ SENSOR_INIT FUNCTION
 SENSOR_READ FUNCTION
 	;outputs sensor data to R2
 	;R2: sensor data output
-	PUSH {R0,R1,R3-R4,R11,LR}
+	;R11: Temp output
+	PUSH {R0-R4,LR}
 	
 	;Setting B9 to output at 50MHZ
 	LDR R0,=GPIOB_BASE + GPIOx_CRH
@@ -95,6 +96,11 @@ SENSOR_READ FUNCTION
 	MOV R2,#7
 	BL set_pin
 	
+; Extract and copy temperature data to R11
+    LSR R11, R2, #16     ;Shift temperature data (bits 16-31) into R11
+	MOV R1,#0xFFFF
+    AND R11, R11, R1 ;Mask to ensure only 16 bits for temperature
+	
 ;Waiting for start message
 	BL __PULL_DOWN_WAIT
 	BL __PULL_UP_WAIT
@@ -138,7 +144,7 @@ __CHECKSUM
 	
 	;TODO Verify message
 	
-	POP {R0,R1,R3-R4,R11,PC}
+	POP {R0-R4,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 __PULL_DOWN_WAIT

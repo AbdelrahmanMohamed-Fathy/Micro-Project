@@ -28,7 +28,6 @@ CYAN2 		EQU 0x07FF
 ; Letter spacing
 LETTER_SPACING EQU 15
 	
-	;IMPORT DELAY
 	IMPORT LCD_INIT
 	IMPORT DRAW_RECTANGLE_FILLED
 	IMPORT RTC_INIT
@@ -44,6 +43,15 @@ LETTER_SPACING EQU 15
 	IMPORT DRAW_NIGHT
 	IMPORT DRAW_LARGE
 	IMPORT DRAW_TIME
+		
+	IMPORT DRAW_TIME
+	IMPORT ERASE_TIME
+	
+	IMPORT DRAW_TEMPERATURE
+	IMPORT ERASE_TEMPERATURE
+	
+	IMPORT DRAW_DATE
+	IMPORT ERASE_DATE
 	
 	EXPORT DRAW_IMAGE
 	EXPORT __main
@@ -61,32 +69,36 @@ __main FUNCTION
 	BL RTC_READ
 	BL BREAK_TIME
 	MOV R9,R3 ;Prev Minutes
+	MOV R10,#WHITE
+	;BL SENSOR_READ
+	MOV R11,#23
+	MOV R12,R11
+	BL REFRESH_ALL
 __main_loop
 	;Reads Time into R2
 	BL RTC_READ
 	
+	;BL SENSOR_READ
+	CMP R12,R11
+	BEQ	__SKIP_SENSOR
+	MOV R12,R11
+	BL REFRESH_TEMPERATURE
+__SKIP_SENSOR
+	
 	BL BREAK_TIME
 	CMP R9,R3
-	BEQ __SKIP
+	BEQ __SKIP_THEME
+	MOV R9,R3
 	MVN R8,R8
 	AND R8,#1
 	CMP R8,#1
 	BLEQ DRAW_MORNING
 	CMP R8,#0
 	BLEQ DRAW_NIGHT
-	BL ERASE_TIME
 	MOV R10,#WHITE
-	BL DRAW_TIME
-__SKIP
-	; R0: x
-	; R1: y
-	; R2: ASCII character
-	; R10: color
-	;MOV R0, #240
-	;MOV R1, #130
-	;MOV R10,#WHITE
-	;BL DRAW
-	
+	BL REFRESH_ALL
+__SKIP_THEME
+
 	B __main_loop
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -110,11 +122,62 @@ SETUP
 	;Initializing TFT LCD
 	BL LCD_INIT
 	BL RTC_INIT
-	;BL SENSOR_INIT
+	BL SENSOR_INIT
 	
 	POP {R0-R2,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+REFRESH_ALL
+	;R3: Minutes Input
+	;R4: Hours Input
+	;R5: Day Input
+	;R6: Month Input
+	;R7: Year Input
+	;R8: Day:1 Night:0
+	;R10: Test Color
+	PUSH {R0-R12,LR}
+	
+	BL REFRESH_TIME
+	BL REFRESH_TEMPERATURE
+	BL REFRESH_DATE
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_TIME
+	;R3: Mintues Input
+	;R4: Hours Input
+	;R8: Day:1 Night:0
+	;R10: Color input
+	PUSH {R0-R12,LR}
+	
+	BL ERASE_TIME
+	BL DRAW_TIME
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_TEMPERATURE
+	;R11: Temp
+	;R8: Day:1 Night:0
+	;R10: Color input
+	PUSH {R0-R12,LR}
+	
+	BL ERASE_TEMPERATURE
+	BL DRAW_TEMPERATURE
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_DATE
+	;R5: Day Input
+	;R6: Month Input
+	;R7: Year Input
+	;R8: Day:1 Night:0
+	;R10: Color input
+	PUSH {R0-R12,LR}
+	
+	BL ERASE_DATE
+	BL DRAW_DATE
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DRAW_IMAGE
 	; r0 - dx
 	; r1 - dy

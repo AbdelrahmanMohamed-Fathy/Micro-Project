@@ -424,6 +424,11 @@
               <FileType>2</FileType>
               <FilePath>.\draw_bg.s</FilePath>
             </File>
+            <File>
+              <FileName>gui.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\gui.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

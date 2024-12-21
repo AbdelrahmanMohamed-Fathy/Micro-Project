@@ -8,21 +8,6 @@ INTERVAL_50uS 		EQU 3600
 INTERVAL_70uS 		EQU 5040
 INTERVAL_80uS 		EQU 5760
 
-;TFT_Positions
-Time_pos_x			EQU 90
-Time_pos_y			EQU 75
-Char_big_size_x		EQU 59
-Char_big_size_y		EQU 117
-Char_small_size_x	EQU 15
-Day_pos_x			EQU	5
-Day_pos_y			EQU	5
-Month_pos_x			EQU	5
-Month_pos_y			EQU	30
-Year_pos_x			EQU 212
-Year_pos_y			EQU 62
-Temp_pos_x			EQU 414
-Temp_pos_y			EQU	10
-
 ;Bases
 RCC_BASE   	EQU 0x40021000
 	
@@ -36,17 +21,64 @@ GPIOx_CRH 	EQU 0x04
 GPIOx_IDR 	EQU 0x08
 GPIOx_ODR 	EQU 0x0C
 
-	EXPORT DELAY
-	EXPORT DIGIT_TO_ASCII
-	EXPORT DRAW_TIME
-	EXPORT BREAK_TIME
-	EXPORT ERASE_TIME
-	EXPORT DELAY_uS	
 	IMPORT DRAW_LARGE
 	IMPORT DRAW_RECTANGLE_FILLED
 	
+	EXPORT DELAY
+	EXPORT DIGIT_TO_ASCII
+	EXPORT DELAY_uS	
+	EXPORT REM
+	EXPORT BREAK_TIME
+	
 	AREA  MYCODE, CODE, READONLY
-		
+
+BREAK_TIME FUNCTION
+	;R2; Full RTC Input
+	;R3: Minutes Output
+	;R4: Hours Output
+	;R5: Day Output
+	;R6: Month Output
+	;R7: Year Output
+	PUSH {R0-R2,LR}
+	MOV R6,R2
+	LDR R7,=60*60*24*30*12
+	BL REM
+	MOV R7,R2 ;Years
+	PUSH {R7}
+	
+	MOV R6,R5
+	LDR R7,=60*60*24*30
+	BL REM
+	MOV R6,R2 ;Months
+	PUSH {R6}
+	
+	MOV R6,R5
+	LDR R7,=60*60*24
+	BL REM
+	MOV R1,R5
+	MOV R5,R2 ;Days
+	PUSH {R5}
+	
+	MOV R6,R1
+	LDR R7,=60*60
+	BL REM
+	MOV R4,R2 ;Hours
+	PUSH {R4}
+	
+	MOV R6,R5
+	LDR R7,=60
+	BL REM
+	MOV R3,R2 ;Minutes
+	
+	POP {R4}
+	POP {R5}
+	POP {R6}
+	POP {R7}
+	
+	ADD R7,#1970
+	
+	POP {R0-R2,PC}
+	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;		
 DELAY FUNCTION 
 	;Takes R11
@@ -119,45 +151,6 @@ REG_TO_ASCII FUNCTION
 	;R5: HUNDREDS
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DRAW_TIME FUNCTION
-	;Draws time from input Hours in R4 and Minutes in R3
-	;Minutes: R3
-	;Hours: R4
-	;Color: R10
-	PUSH {R0-R12, LR}
-	;Drawing Hours
-	LDR R0,=Time_pos_x
-	LDR R1,=Time_pos_y
-	MOV R6,R4
-	MOV R7,#10
-	BL REM
-	BL DIGIT_TO_ASCII
-	BL DRAW_LARGE
-	ADD R0,#Char_big_size_x
-	MOV R2,R5
-	BL DIGIT_TO_ASCII
-	BL DRAW_LARGE
-	ADD R0,#Char_big_size_x
-	
-	;Drawing ':'
-	MOV R2,#':'
-	BL DRAW_LARGE
-	ADD R0,#Char_big_size_x
-	
-	;Drawing Minutes
-	MOV R6,R3
-	MOV R7,#10
-	BL REM
-	BL DIGIT_TO_ASCII
-	BL DRAW_LARGE
-	ADD R0,#Char_big_size_x
-	MOV R2,R5
-	BL DIGIT_TO_ASCII
-	BL DRAW_LARGE
-	
-	POP {R0-R12, PC}
-	ENDFUNC
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 REM FUNCTION
 	;R2: Quotient Output
 	;R5: Remainder Output
@@ -168,75 +161,3 @@ REM FUNCTION
 	MLS R5, R2, R7 , R6
 	POP {R0-R1,R3-R4,R6-R12,PC}
 	ENDFUNC
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-BREAK_TIME FUNCTION
-	;R2; Full RTC Input
-	;R3: Minutes Output
-	;R4: Hours Output
-	;R5: Day Output
-	;R6: Month Output
-	;R7: Year Output
-	PUSH {R0-R2,LR}
-	MOV R6,R2
-	LDR R7,=60*60*24*30*12
-	BL REM
-	MOV R7,R2 ;Years
-	PUSH {R7}
-	
-	MOV R6,R5
-	LDR R7,=60*60*24*30
-	BL REM
-	MOV R6,R2 ;Months
-	PUSH {R6}
-	
-	MOV R6,R5
-	LDR R7,=60*60*24
-	BL REM
-	MOV R1,R5
-	MOV R5,R2 ;Days
-	PUSH {R5}
-	
-	MOV R6,R1
-	LDR R7,=60*60
-	BL REM
-	MOV R4,R2 ;Hours
-	PUSH {R4}
-	
-	MOV R6,R5
-	LDR R7,=60
-	BL REM
-	MOV R3,R2 ;Minutes
-	
-	POP {R4}
-	POP {R5}
-	POP {R6}
-	POP {R7}
-	
-	ADD R7,#1970
-	
-	POP {R0-R2,PC}
-	ENDFUNC
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ERASE_TIME FUNCTION
-	;R8: Day:1 Night:0 Input
-	PUSH {R0-R12,LR}
-	
-	MOV R0,#Time_pos_x
-	MOV R1,#Time_pos_y
-	MOV R3,#Time_pos_x + (Char_big_size_x*4)
-	MOV R4,#Time_pos_y + Char_big_size_y
-	CMP R8,#1
-	BNE __NIGHT
-	
-__DAY
-	MOV R10,#19902
-	B __ERASE_OUT
-__NIGHT
-	MOV R10,#0
-	B __ERASE_OUT
-	
-__ERASE_OUT
-	BL DRAW_RECTANGLE_FILLED
-	POP {R0-R12,PC}
-	ENDFUNC
-	END
