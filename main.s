@@ -69,7 +69,8 @@ __main FUNCTION
 	BL RTC_READ
 	BL BREAK_TIME
 	MOV R9,R3 ;Prev Minutes
-	BL DRAW_TIME
+	MOV R10,#WHITE
+	BL REFRESH_ALL
 __main_loop
 	;Reads Time into R2
 	BL RTC_READ
