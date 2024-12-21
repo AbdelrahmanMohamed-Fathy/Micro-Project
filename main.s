@@ -58,20 +58,19 @@ __main_loop
 	;Reads Time into R2
 	BL RTC_READ
 	
-	;BL BREAK_TIME
+	BL BREAK_TIME
 	
 	;Draw Background
 	BL DRAW_MORNING
-	AND R2,#1
-	BL DIGIT_TO_ASCII
+	BL DRAW_TIME
 	; R0: x
 	; R1: y
 	; R2: ASCII character
 	; R10: color
-	MOV R0, #240
-	MOV R1, #160
-	MOV R10,#WHITE
-	BL DRAW
+	;MOV R0, #240
+	;MOV R1, #130
+	;MOV R10,#WHITE
+	;BL DRAW
 	
 	B __main_loop
 	ENDFUNC
