@@ -54,7 +54,6 @@ __main FUNCTION
 
 	;CALL FUNCTION SETUP
 	BL SETUP
-
 __main_loop
 	;Reads Time into R2
 	BL RTC_READ
@@ -64,6 +63,7 @@ __main_loop
 	MOV R10,#WHITE
 	;Draw Background
 	BL DRAW_MORNING
+	
 	BL DRAW_TIME
 	; R0: x
 	; R1: y
@@ -88,10 +88,10 @@ SETUP
 	
 	;to configure port A as output(medium speed)
 	LDR R0, =GPIOA_BASE + GPIOx_CRL 
-	LDR R1,=0x11111111
+	LDR R1,=0x33333333
 	STR R1,[R0]
 	LDR R0, =GPIOA_BASE + GPIOx_CRH
-	LDR R1,=0x11111111
+	LDR R1,=0x33333333
 	STR R1,[R0]
 	
 	;Initializing TFT LCD

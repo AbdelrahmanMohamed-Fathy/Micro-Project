@@ -26,6 +26,7 @@ Temp_pos_y			EQU	10
 	EXPORT DIGIT_TO_ASCII
 	EXPORT DRAW_TIME
 	EXPORT BREAK_TIME
+	EXPORT ERASE_TIME
 		
 	IMPORT DRAW_LARGE
 	
@@ -153,5 +154,13 @@ BREAK_TIME FUNCTION
 	
 	POP {R0-R2,PC}
 	ENDFUNC
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ERASE_TIME FUNCTION
+	;R8: Day:1 Night:0 Input
+	PUSH {R0-R12,LR}
+	
+	
+	
+	POP {R0-R12,PC}
+	ENDFUNC
 	END
