@@ -208,13 +208,13 @@ DRAW_DEC
     PUSH {R0-R12, LR}
     MOV R2, #'D'
     BL DRAW
-    ADD R0, R0, Char_small_size_x
+    ADD R0, R0, #Char_small_size_x
     MOV R2, #'e'
     BL DRAW
-    ADD R0, R0, Char_small_size_x
+    ADD R0, R0, #Char_small_size_x
     MOV R2, #'c'
     BL DRAW
-    ADD R0, R0, Char_small_size_x
+    ADD R0, R0, #Char_small_size_x
     POP {R0-R12, PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
