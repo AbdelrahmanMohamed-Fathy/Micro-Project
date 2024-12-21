@@ -19,6 +19,8 @@ Temp_pos_y			EQU	10
 	IMPORT DRAW
 	IMPORT DRAW_LARGE
 	IMPORT DIGIT_TO_ASCII
+	IMPORT DRAW_MONTH
+	IMPORT DRAW_DAY
 
 	EXPORT DRAW_TIME
 	EXPORT ERASE_TIME
@@ -124,11 +126,41 @@ DRAW_DATE FUNCTION
 	;R7: Year Input
 	;Color: R10
 	PUSH {R0-R12,LR}
+	;Drawing the Day/Month
+	PUSH {R7}
+	PUSH {R6}
+	PUSH {R5}
+	MOV R0,#30
+	SUB R6,#1
+	SUB R5,#1
+	MUL R8, R6, R0
+	ADD R8, R8, R5
+	MOV R6,R8
+	MOV R7,#7
+	BL REM
+	MOV R8,R5
+	LDR R0,=Day_pos_x
+	LDR R1,=Day_pos_y
+	BL DRAW_DAY
 	
+	POP {R5}
+	LDR R0,=Month_pos_x
+	LDR R1,=Month_pos_y
+	MOV R6,R5
+	MOV R7,#10
+	BL REM
+	BL DIGIT_TO_ASCII
+	BL DRAW
+	ADD R0,#Char_small_size_x
+	MOV R2,R5
+	BL DIGIT_TO_ASCII
+	BL DRAW
+	ADD R0,#Char_small_size_x*2
+	POP {R6}
+	BL DRAW_MONTH
 	
-	
-	
-	
+	;Drawing Year
+	POP {R7}
 	LDR R0,=Year_pos_x
 	LDR R1,=Year_pos_y
 	MOV R6,R7
@@ -192,5 +224,7 @@ __NIGHT
 __COLOR_OUT
 	POP {R0-R9,R11-R12,PC}
 	ENDFUNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 	END

@@ -90,9 +90,11 @@ DELAY_LOOP
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DELAY_uS FUNCTION
-    PUSH {R1-R4, LR}                ; Save registers
+    ; Input: R11 = delay duration in microseconds
+    ; Preserve registers
+	PUSH {R1-R4, LR}                ; Save registers
     LDR R1, =0x40000024          ; TIM2_CNT address
-    MOV R4, R0                   ; Load delay value (in R0) into R4
+    MOV R4, R11                   ; Load delay value (in R0) into R4
 
     ; Reset the counter
     LDR R0, =0x40000010          ; TIM2_SR address
