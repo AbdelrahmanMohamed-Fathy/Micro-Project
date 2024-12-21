@@ -3,15 +3,6 @@ GPIOx_CRH 		EQU 0x04
 GPIOx_IDR 		EQU 0x08
 GPIOx_ODR		EQU 0x0C
 
-INTERVAL_27uS 	EQU 1000
-INTERVAL_20uS	EQU 720
-INTERVAL_30uS	EQU 1080
-INTERVAL_40uS 	EQU 1440
-INTERVAL_50uS 	EQU 3600
-INTERVAL_70uS 	EQU 5040
-INTERVAL_4MS 	EQU 288889
-INTERVAL_18MS 	EQU 650000
-
 	IMPORT DELAY
 	IMPORT DELAY_uS
 	EXPORT SENSOR_READ
@@ -104,11 +95,6 @@ SENSOR_READ FUNCTION
 	LDR R0,=GPIOB_BASE + GPIOx_CRH
 	MOV R2,#7
 	BL set_pin
-	
-; Extract and copy temperature data to R11
-    LSR R11, R2, #16     ;Shift temperature data (bits 16-31) into R11
-	MOV R1,#0xFFFF
-    AND R11, R11, R1 ;Mask to ensure only 16 bits for temperature
 	
 ;Waiting for start message
 	BL __PULL_DOWN_WAIT
