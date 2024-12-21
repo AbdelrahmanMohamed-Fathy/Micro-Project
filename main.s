@@ -28,7 +28,7 @@ CYAN2 			EQU 0x07FF
 ; Letter spacing
 LETTER_SPACING 	EQU 15
 	
-;Extra Minutes between theme switch (When zero it changes every minute)
+;Extra Minutes between theme switch (Theme changes after Time_Offset+1)
 Time_Offset		EQU 1
 	
 	IMPORT LCD_INIT
@@ -41,6 +41,7 @@ Time_Offset		EQU 1
 	IMPORT BREAK_TIME
 	IMPORT ERASE_TIME
 	IMPORT TIM2_INIT
+	IMPORT REM
 
 	IMPORT DRAW
 	IMPORT DRAW_MORNING
@@ -74,7 +75,15 @@ __main FUNCTION
 	BL BREAK_TIME
 	MOV R0,R3 ;Time Diff Minutes
 	MOV R9,R3 ;Theme Diff Minutes
-	ADD R9,#Time_Offset 
+	ADD R9,#Time_Offset
+	;handling overflow in theme wait
+	PUSH {R2,R5,R6,R7}
+	MOV R6,R9
+	MOV R7,#60
+	BL REM
+	MOV R9,R5
+	POP {R2,R5,R6,R7}
+	
 	MOV R10,#WHITE
 	BL SENSOR_READ
 	;MOV R11,#23	;Debug value for TEMPERATURE print test
