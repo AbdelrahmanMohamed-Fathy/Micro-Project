@@ -62,6 +62,7 @@ DRAW_TIME FUNCTION
 	;Draws time from input Hours in R4 and Minutes in R3
 	;Minutes: R3
 	;Hours: R4
+	;Color: R10
 	PUSH {R0-R12, LR}
 	;Drawing Hours
 	LDR R0,=Time_pos_x
@@ -116,32 +117,40 @@ BREAK_TIME FUNCTION
 	;R7: Year Output
 	PUSH {R0-R2,LR}
 	MOV R6,R2
-	MOV R7,#60
+	LDR R7,=60*60*24*30*12
 	BL REM
-	MOV R3,R2 ;Minutes Done
-	PUSH {R3}
+	MOV R7,R2 ;Years
+	PUSH {R7}
 	
-	MOV R6,R2
-	MOV R7,#24
+	MOV R6,R5
+	LDR R7,=60*60*24*30
 	BL REM
-	MOV R4,R5 ;Hours done
-	PUSH {R4}
+	MOV R6,R2 ;Months
+	PUSH {R6}
 	
-	MOV R6,R2
-	MOV R7,#30
+	MOV R6,R5
+	LDR R7,=60*60*24
 	BL REM
-	MOV R5,R5 ;Days done
+	MOV R1,R5
+	MOV R5,R2 ;Days
 	PUSH {R5}
 	
-	MOV R6,R2
-	MOV R7,#12
+	MOV R6,R1
+	LDR R7,=60*60
 	BL REM
-	MOV R6,R5 ;Months done
-	MOV R7,R2 ;Years done
-	POP {R5}
+	MOV R4,R2 ;Hours
+	PUSH {R4}
+	
+	MOV R6,R5
+	LDR R7,=60
+	BL REM
+	MOV R3,R2 ;Minutes
+	
 	POP {R4}
-	POP {R3}
-
+	POP {R5}
+	POP {R6}
+	POP {R7}
+	
 	POP {R0-R2,PC}
 	ENDFUNC
 

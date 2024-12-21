@@ -61,6 +61,7 @@ __main_loop
 	
 	BL BREAK_TIME
 	
+	MOV R10,#WHITE
 	;Draw Background
 	BL DRAW_MORNING
 	BL DRAW_TIME
