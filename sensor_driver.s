@@ -74,7 +74,7 @@ SENSOR_READ FUNCTION
 	LDR R0,=GPIOB_BASE + GPIOx_ODR
 	MOV R2,#9
 	BL set_pin
-	MOV R11,#30
+	MOV R11,#40
 	BL DELAY_uS
 	
 	;Setting B9 to input
