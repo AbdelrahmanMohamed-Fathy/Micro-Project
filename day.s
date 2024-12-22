@@ -121,4 +121,5 @@ DRAW_SUN
 	BL DRAW
 	ADD R0, R0, #Char_small_size_x
 	POP {R0-R12, PC}
+	END
 
