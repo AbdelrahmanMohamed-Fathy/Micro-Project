@@ -31,6 +31,7 @@
 	EXPORT DRAW_IMAGE
     EXPORT GET_MODE
     EXPORT DRAW_CURRENT_MODE
+	EXPORT UDPATE_CURRENT_MODE
 
 	IMPORT DELAY
 	AREA MYCODE, CODE, READONLY
@@ -84,7 +85,7 @@ _skip_draw_mode
 UDPATE_CURRENT_MODE FUNCTION 
     PUSH {R0-R12, LR}
     CMP R10, #0
-    BEQ _skip_draw_mode
+    BEQ _skip_update_mode
 
     CMP R9, #0
     BLEQ UPDATE_CLOCK_MODE
@@ -93,7 +94,7 @@ UDPATE_CURRENT_MODE FUNCTION
 
     CMP R9, #2
 
-_skip_draw_mode
+_skip_update_mode
     POP {R0-R12, PC}	
 	ENDFUNC
 
