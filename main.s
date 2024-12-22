@@ -48,12 +48,11 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 	ENTRY
 	
 	; Start in clock mode R5 Contains the current mode (0 - Clock, 1 - Alarm, 2 - Timer)
-	MOV R5, #0
 __main FUNCTION
-
+	MOV R5, #0
+	BL SETUP
 main_loop
 	;CALL FUNCTION SETUP
-	BL SETUP
 	BL GET_MODE
 	BL DRAW_CURRENT_MODE
 	B main_loop
