@@ -5,7 +5,7 @@
 	IMPORT TIM2_INIT
 	
 	IMPORT GET_MODE
-	IMPORT DRAW_CURRENT_MODE
+	IMPORT Update_Handler
 
 
 	EXPORT __main
@@ -22,9 +22,9 @@
 __main FUNCTION
 	BL SETUP
 	MOV R9, #0
-	MOV R0,R9
+	MOV R0, #1 ;anything other than R9 for start
 main_loop
-	BL DRAW_CURRENT_MODE
+	BL Update_Handler
 	BL GET_MODE
 	B main_loop
 	ENDFUNC
