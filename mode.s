@@ -74,7 +74,7 @@ GET_MODE FUNCTION
     LDR R0, =GPIOB_BASE + GPIOx_IDR
 
     MOV R11, #55000    
-    BL DELAY
+    ;BL DELAY
 
     LDR R1, [R0]
     LSR R1, R1, #MODE_BIT
@@ -126,7 +126,7 @@ DRAW_CLOCK_MODE FUNCTION
 	LDR R11,=TFT_INTERVAL
 	BL DELAY
 	;BL SENSOR_READ
-	;MOV R11,#23	;Debug value for TEMPERATURE print test
+	MOV R11,#23	;Debug value for TEMPERATURE print test
 	MOV R12,R11
 	BL REFRESH_ALL
 	;Reads Time into R2
@@ -166,7 +166,7 @@ __SKIP_THEME
 	BL REFRESH_TIME
 	BL REFRESH_DATE
 __SKIP_ALL
-    PUSH {R0-R12, PC}
+    POP {R0-R12, PC}
     ENDFUNC
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
