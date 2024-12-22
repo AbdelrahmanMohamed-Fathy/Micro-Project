@@ -50,10 +50,11 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 	; Start in clock mode R9 Contains the current mode (0 - Clock, 1 - Alarm, 2 - Timer)
 __main FUNCTION
 	MOV R9, #0
+	MOV R10,#1
 	BL SETUP
 main_loop
-	BL GET_MODE
 	BL DRAW_CURRENT_MODE
+	BL GET_MODE
 	B main_loop
 	ENDFUNC
 
