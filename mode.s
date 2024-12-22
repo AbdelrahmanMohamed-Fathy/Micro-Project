@@ -93,7 +93,7 @@ Update_Handler
 	;R9: CLK:0 ALR:1 TIM:2
 	;R10: Prev Time
 	;R12: Prev Temp
-	PUSH {R1-R9,R11,LR}
+	PUSH {R1-R7,R9,R11,LR}
 	
 	;This Function handles Update Logic for all modes simultaneously
 	
@@ -180,8 +180,7 @@ __SKIP_SENSOR_CHANGE
 	BEQ __SKIP_CLK_TIME_CHANGE
 	
 	MOV R10,R3
-	BL REFRESH_TIME
-	BL REFRESH_DATE
+	BL REFRESH_CLK
 	
 __SKIP_CLK_TIME_CHANGE
 	POP {R0-R9,R11,PC}
