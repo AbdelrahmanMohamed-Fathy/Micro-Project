@@ -67,7 +67,7 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 
 
 GET_MODE FUNCTION
-    ; R5 - Changes the R5 register with the current Mode
+    ; R9 - Changes the R9 register with the current Mode
     
     PUSH {R0-R4, R6-R12, LR}
 
@@ -80,11 +80,11 @@ GET_MODE FUNCTION
     LSR R1, R1, #MODE_BIT
     AND R1, R1, #1
     CMP R1, #1
-    ADDEQ R5, R5, #1
+    ADDEQ R9, R9, #1
 
     ; Assuming we have (Clock - 0, Timer - 1, Alarm - 2)
-    CMP R5, #3
-    MOVEQ R5, #0
+    CMP R9, #3
+    MOVEQ R9, #0
 
     POP {R0-R4, R6-R12, PC}
     ENDFUNC
@@ -92,13 +92,13 @@ GET_MODE FUNCTION
 DRAW_CURRENT_MODE FUNCTION 
     PUSH {R0-R12, LR}
 
-    CMP R5, #0
+    CMP R9, #0
     BLEQ DRAW_CLOCK_MODE
 
-    CMP R5, #1
+    CMP R9, #1
     BLEQ DRAW_NIGHT
 
-    CMP R5, #2
+    CMP R9, #2
     BLEQ DRAW_MORNING
 
     POP {R0-R12, PC}
@@ -125,16 +125,15 @@ DRAW_CLOCK_MODE FUNCTION
 	MOV R10,#WHITE
 	LDR R11,=TFT_INTERVAL
 	BL DELAY
-	BL SENSOR_READ
+	;BL SENSOR_READ
 	;MOV R11,#23	;Debug value for TEMPERATURE print test
 	MOV R12,R11
 	BL REFRESH_ALL
-;__main_loop
 	;Reads Time into R2
 	BL RTC_READ
 	
 	;Handling Only Temperature change
-	BL SENSOR_READ
+	;BL SENSOR_READ
 	CMP R12,R11
 	BEQ	__SKIP_SENSOR
 	MOV R12,R11
@@ -167,7 +166,7 @@ __SKIP_THEME
 	BL REFRESH_TIME
 	BL REFRESH_DATE
 __SKIP_ALL
-	;B __main_loop
+    PUSH {R0-R12, PC}
     ENDFUNC
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
