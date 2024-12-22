@@ -1,38 +1,5 @@
-GPIOx_IDR 		EQU 0x08
-MODE_BIT        EQU 12
-;Bases
-GPIOA_BASE 		EQU 0x40010800
-GPIOB_BASE 		EQU 0X40010C00
-RCC_BASE   		EQU 0x40021000
-	
-;RCC Offsets
-RCC_APB2ENR 	EQU 0x18
-	
-;GPIOx Offsets
-GPIOx_CRL 		EQU 0x00
-GPIOx_CRH 		EQU 0x04
-GPIOx_ODR 		EQU 0x0C
-	
-;just some color codes, 16-bit colors coded in RGB 565
-BLACK			EQU 0x0000
-BLUE 			EQU 0x001F
-RED  			EQU 0xF800
-RED2   			EQU 0x4000
-GREEN 			EQU 0x07E0
-CYAN  			EQU 0x07FF
-MAGENTA 		EQU 0xF81F
-YELLOW			EQU 0xFFE0
-WHITE 			EQU 0xFFFF
-GREEN2 			EQU 0x2FA4
-CYAN2 			EQU 0x07FF
-	
-; Letter spacing
-LETTER_SPACING 	EQU 15
-	
-;Minutes between theme switch (Theme changes after Time_Offset)
-Time_Offset		EQU 2
-	
-TFT_INTERVAL 		EQU 0x4FFFFF
+
+    INCLUDE constants.inc
 
 	IMPORT RTC_READ
 	IMPORT DIGIT_TO_ASCII
@@ -57,8 +24,11 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 
 	IMPORT DRAW_DATE
 	IMPORT ERASE_DATE
-	EXPORT DRAW_IMAGE
+    IMPORT DRAW_CLOCK
+    IMPORT DRAW_ALARM
+    IMPORT DRAW_TIMER
 
+	EXPORT DRAW_IMAGE
     EXPORT GET_MODE
     EXPORT DRAW_CURRENT_MODE
 
@@ -67,47 +37,54 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 
 
 GET_MODE FUNCTION
-    ; R5 - Changes the R5 register with the current Mode
+    ; R9 - Changes the R9 register with the current Mode
     
-    PUSH {R0-R4, R6-R12, LR}
+    PUSH {R0-R8, R11-R12, LR}
 
     LDR R0, =GPIOB_BASE + GPIOx_IDR
 
     MOV R11, #55000    
-    BL DELAY
+    ;BL DELAY
 
     LDR R1, [R0]
     LSR R1, R1, #MODE_BIT
     AND R1, R1, #1
     CMP R1, #1
-    ADDEQ R5, R5, #1
+    MOV R10, #0
+    MOVEQ R10, #1
+    ADDEQ R9, R9, #1
 
     ; Assuming we have (Clock - 0, Timer - 1, Alarm - 2)
-    CMP R5, #3
-    MOVEQ R5, #0
+    CMP R9, #3
+    MOVEQ R9, #0
 
-    POP {R0-R4, R6-R12, PC}
+    POP {R0-R8, R11-R12, PC}
     ENDFUNC
 
 DRAW_CURRENT_MODE FUNCTION 
     PUSH {R0-R12, LR}
+    CMP R10, #0
+    BEQ _skip_draw_mode
 
-    CMP R5, #0
+    CMP R9, #0
     BLEQ DRAW_CLOCK_MODE
 
-    CMP R5, #1
-    BLEQ DRAW_NIGHT
+    CMP R9, #1
+    BLEQ DRAW_ALARM_MODE
 
-    CMP R5, #0
-    BLEQ DRAW_MORNING
+    CMP R9, #2
+    BLEQ DRAW_TIMER_MODE
 
+_skip_draw_mode
     POP {R0-R12, PC}
     ENDFUNC
 
 DRAW_CLOCK_MODE FUNCTION 
     PUSH {R0-R12, LR}
+    
 	;Draw Background
 	BL DRAW_MORNING
+    BL DRAW_CLOCK
 	MOV R8,#1
 	BL RTC_READ
 	BL BREAK_TIME
@@ -129,7 +106,6 @@ DRAW_CLOCK_MODE FUNCTION
 	;MOV R11,#23	;Debug value for TEMPERATURE print test
 	MOV R12,R11
 	BL REFRESH_ALL
-;__main_loop
 	;Reads Time into R2
 	BL RTC_READ
 	
@@ -167,7 +143,21 @@ __SKIP_THEME
 	BL REFRESH_TIME
 	BL REFRESH_DATE
 __SKIP_ALL
-	;B __main_loop
+    POP {R0-R12, PC}
+    ENDFUNC
+
+DRAW_ALARM_MODE FUNCTION 
+    PUSH {R0-R12, LR}
+    BL DRAW_NIGHT
+    BL DRAW_ALARM
+    POP {R0-R12, PC}
+    ENDFUNC
+
+DRAW_TIMER_MODE FUNCTION 
+    PUSH {R0-R12, LR}
+    BL DRAW_MORNING
+    BL DRAW_TIMER
+    POP {R0-R12, PC}
     ENDFUNC
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -186,6 +176,10 @@ REFRESH_ALL
 	BL REFRESH_DATE
 	
 	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_CLOCK_MODE
+	;R9: CLK:0 ALR:1 TIM:2
+	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 REFRESH_TIME
 	;R3: Mintues Input
