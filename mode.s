@@ -57,8 +57,9 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 
 	IMPORT DRAW_DATE
 	IMPORT ERASE_DATE
-	EXPORT DRAW_IMAGE
+    IMPORT DRAW_CLOCK
 
+	EXPORT DRAW_IMAGE
     EXPORT GET_MODE
     EXPORT DRAW_CURRENT_MODE
 
@@ -69,28 +70,32 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 GET_MODE FUNCTION
     ; R9 - Changes the R9 register with the current Mode
     
-    PUSH {R0-R8, R10-R12, LR}
+    PUSH {R0-R8, R11-R12, LR}
 
     LDR R0, =GPIOB_BASE + GPIOx_IDR
 
     MOV R11, #55000    
-    BL DELAY
+    ;BL DELAY
 
     LDR R1, [R0]
     LSR R1, R1, #MODE_BIT
     AND R1, R1, #1
     CMP R1, #1
+    MOV R10, #0
+    MOVEQ R10, #1
     ADDEQ R9, R9, #1
 
     ; Assuming we have (Clock - 0, Timer - 1, Alarm - 2)
     CMP R9, #3
     MOVEQ R9, #0
 
-    POP {R0-R8, R10-R12, PC}
+    POP {R0-R8, R11-R12, PC}
     ENDFUNC
 
 DRAW_CURRENT_MODE FUNCTION 
     PUSH {R0-R12, LR}
+    CMP R10, #0
+    BEQ _skip_draw_mode
 
     CMP R9, #0
     BLEQ DRAW_CLOCK_MODE
@@ -101,6 +106,7 @@ DRAW_CURRENT_MODE FUNCTION
     CMP R9, #2
     BLEQ DRAW_MORNING
 
+_skip_draw_mode
     POP {R0-R12, PC}
     ENDFUNC
 
@@ -108,6 +114,7 @@ DRAW_CLOCK_MODE FUNCTION
     PUSH {R0-R12, LR}
 	;Draw Background
 	BL DRAW_MORNING
+    BL DRAW_CLOCK
 	MOV R8,#1
 	BL RTC_READ
 	BL BREAK_TIME
@@ -126,7 +133,7 @@ DRAW_CLOCK_MODE FUNCTION
 	LDR R11,=TFT_INTERVAL
 	BL DELAY
 	;BL SENSOR_READ
-	;MOV R11,#23	;Debug value for TEMPERATURE print test
+	MOV R11,#23	;Debug value for TEMPERATURE print test
 	MOV R12,R11
 	BL REFRESH_ALL
 	;Reads Time into R2

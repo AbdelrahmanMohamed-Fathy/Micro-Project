@@ -48,12 +48,14 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 	ENTRY
 	
 	; Start in clock mode R9 Contains the current mode (0 - Clock, 1 - Alarm, 2 - Timer)
+	; R10 specifies whether to draw or not #1 means draw, #0 means don't draw
 __main FUNCTION
 	MOV R9, #0
+	MOV R10,#1
 	BL SETUP
 main_loop
-	BL GET_MODE
 	BL DRAW_CURRENT_MODE
+	BL GET_MODE
 	B main_loop
 	ENDFUNC
 
