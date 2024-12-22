@@ -24,9 +24,9 @@ TIM2_INIT FUNCTION
     STR R1, [R0, #0x1C]       ; Write back to RCC_APB1ENR
 
     LDR R0, =0x40000000       ; TIM2 base address
-    MOV R1, #72               ; Prescaler value (PSC = 71)
+    MOV R1, #71               ; Prescaler value (PSC = 71)
     STR R1, [R0, #0x28]       ; Write to TIM2_PSC
-    MOV R1, #0x61A8           ; Auto-reload value
+    MOV R1, #0xFFFF           ; Auto-reload value
     STR R1, [R0, #0x2C]       ; Write to TIM2_ARR
 
     LDR R1, [R0, #0x0C]       ; Read TIM2_DIER
