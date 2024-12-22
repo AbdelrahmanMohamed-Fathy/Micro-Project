@@ -34,105 +34,29 @@ Time_Offset		EQU 2
 TFT_INTERVAL 		EQU 0x4FFFFF
 	
 	IMPORT LCD_INIT
-	IMPORT DRAW_RECTANGLE_FILLED
 	IMPORT RTC_INIT
-	IMPORT RTC_READ
-	IMPORT DIGIT_TO_ASCII
-	IMPORT SENSOR_READ
 	IMPORT SENSOR_INIT
-	IMPORT BREAK_TIME
-	IMPORT ERASE_TIME
 	IMPORT TIM2_INIT
-	IMPORT REM
-	IMPORT DELAY
+	
+	IMPORT GET_MODE
+	IMPORT DRAW_CURRENT_MODE
 
-	IMPORT DRAW
-	IMPORT DRAW_MORNING
-	IMPORT DRAW_NIGHT
-	IMPORT DRAW_LARGE
-	IMPORT DRAW_TIME
-		
-	IMPORT DRAW_TIME
-	IMPORT ERASE_TIME
-	
-	IMPORT DRAW_TEMPERATURE
-	IMPORT ERASE_TEMPERATURE
-	
-	IMPORT DRAW_DATE
-	IMPORT ERASE_DATE
-	
-	EXPORT DRAW_IMAGE
+
 	EXPORT __main
 
 	AREA	MYCODE, CODE, READONLY
 	ENTRY
 	
+	; Start in clock mode R5 Contains the current mode (0 - Clock, 1 - Alarm, 2 - Timer)
+	MOV R5, #0
 __main FUNCTION
 
+main_loop
 	;CALL FUNCTION SETUP
 	BL SETUP
-	;Draw Background
-	BL DRAW_MORNING
-	MOV R8,#1
-	BL RTC_READ
-	BL BREAK_TIME
-	MOV R0,R3 ;Time Diff Minutes
-	MOV R9,R3 ;Theme Diff Minutes
-	ADD R9,#Time_Offset
-	;handling overflow in theme wait
-	PUSH {R2,R5,R6,R7}
-	MOV R6,R9
-	MOV R7,#60
-	BL REM
-	MOV R9,R5
-	POP {R2,R5,R6,R7}
-	
-	MOV R10,#WHITE
-	LDR R11,=TFT_INTERVAL
-	BL DELAY
-	BL SENSOR_READ
-	;MOV R11,#23	;Debug value for TEMPERATURE print test
-	MOV R12,R11
-	BL REFRESH_ALL
-__main_loop
-	;Reads Time into R2
-	BL RTC_READ
-	
-	;Handling Only Temperature change
-	BL SENSOR_READ
-	CMP R12,R11
-	BEQ	__SKIP_SENSOR
-	MOV R12,R11
-	BL REFRESH_TEMPERATURE
-__SKIP_SENSOR
-	
-	BL BREAK_TIME
-	
-	;Handling Full Theme Change
-	CMP R9,R3
-	BNE __SKIP_THEME
-	MOV R0,R3
-	MOV R9,R3
-	ADD R9,#Time_Offset;
-	MVN R8,R8
-	AND R8,#1
-	CMP R8,#1
-	BLEQ DRAW_MORNING
-	CMP R8,#0
-	BLEQ DRAW_NIGHT
-	MOV R10,#WHITE
-	BL REFRESH_ALL
-	B __SKIP_ALL
-__SKIP_THEME
-
-	;Handling Only Time Change
-	CMP R0,R3
-	BEQ __SKIP_ALL
-	MOV R0,R3
-	BL REFRESH_TIME
-	BL REFRESH_DATE
-__SKIP_ALL
-	B __main_loop
+	BL GET_MODE
+	BL DRAW_CURRENT_MODE
+	B main_loop
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SETUP
@@ -177,98 +101,3 @@ SETUP
 	BL TIM2_INIT
 	
 	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_ALL
-	;R3: Minutes Input
-	;R4: Hours Input
-	;R5: Day Input
-	;R6: Month Input
-	;R7: Year Input
-	;R8: Day:1 Night:0
-	;R10: Test Color
-	PUSH {R0-R12,LR}
-	
-	BL REFRESH_TIME
-	BL REFRESH_TEMPERATURE
-	BL REFRESH_DATE
-	
-	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_TIME
-	;R3: Mintues Input
-	;R4: Hours Input
-	;R8: Day:1 Night:0
-	;R10: Color input
-	PUSH {R0-R12,LR}
-	
-	BL ERASE_TIME
-	BL DRAW_TIME
-	
-	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_TEMPERATURE
-	;R11: Temp
-	;R8: Day:1 Night:0
-	;R10: Color input
-	PUSH {R0-R12,LR}
-	
-	BL ERASE_TEMPERATURE
-	BL DRAW_TEMPERATURE
-	
-	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_DATE
-	;R5: Day Input
-	;R6: Month Input
-	;R7: Year Input
-	;R8: Day:1 Night:0
-	;R10: Color input
-	PUSH {R0-R12,LR}
-	
-	BL ERASE_DATE
-	BL DRAW_DATE
-	
-	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DRAW_IMAGE
-	; r0 - dx
-	; r1 - dy
-	; r9 - table address
-
-    PUSH {R0-R12, LR}
-	
-    MOV R5, R0         ; base x
-    MOV R6, R1         ; base y
-
-    MOV R11, #0X1FF
-
-DRAW_LOOP
-    LDR R7, [R9], #4   ; Load packed start (x0 y0)
-    LDR R8, [R9], #4   ; Load packed end (x1, y1)
-    LDR R10, [R9], #4  ; Load color
-    CMP R7, #0         ; Check if end of table
-    BEQ END_DRAW
-
-    MOV R0, R7, LSR #9 ; Extract x0
-    AND R0, R0, R11 ; Mask lower 9 bits
-    MOV R1, R7         ; Extract y0
-    AND R1, R1, R11 ; Mask lower 9 bits
-
-    MOV R3, R8, LSR #9 ; Extract x1
-    AND R3, R3, R11 ; Mask lower 9 bits
-    MOV R4, R8         ; Extract y1
-    AND R4, R4, R11 ; Mask lower 9 bits
-
-    ; x0 - R0, y0 - R1, x1 - R3, y1 - R4
-
-    ADD R0, R5, R0
-    ADD R1, R6, R1
-    ADD R3, R5, R3
-    ADD R4, R6, R4
-
-    BL DRAW_RECTANGLE_FILLED
-    B DRAW_LOOP
-
-END_DRAW
-    POP {R0-R12, PC}
-	END
