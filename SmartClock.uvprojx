@@ -444,6 +444,11 @@
               <FileType>5</FileType>
               <FilePath>.\constants.inc</FilePath>
             </File>
+            <File>
+              <FileName>alarm.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\alarm.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
