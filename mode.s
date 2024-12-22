@@ -1,0 +1,116 @@
+GPIOB_BASE		EQU 0X40010C00
+GPIOx_IDR 		EQU 0x08
+MODE_BIT        EQU 12
+
+
+    EXPORT GET_MODE
+    EXPORT DRAW_CURRENT_MODE
+
+	IMPORT DELAY
+	AREA MYCODE, CODE, READONLY
+
+
+GET_MODE FUNCTION
+    ; R5 - Changes the R5 register with the current Mode
+    
+    PUSH {R0-R4, R6-R12, LR}
+
+    LDR R0, =GPIOB_BASE + GPIOx_IDR
+
+    MOV R11, #55000    
+    BL DELAY
+
+    LDR R1, [R0]
+    LSR R1, R1, #MODE_BIT
+    AND R1, R1, #1
+    CMP R1, #1
+    ADDEQ R5, R5, #1
+
+    ; Assuming we have (Clock - 0, Timer - 1, Alarm - 2)
+    CMP R5, #3
+    MOVEQ R5, #0
+
+    POP {R0-R4, R6-R12, PC}
+    ENDFUNC
+
+DRAW_CURRENT_MODE FUNCTION 
+    PUSH {R0-R12, LR}
+
+    CMP R0, #0
+    BLEQ DRAW_CLOCK_MODE
+
+    CMP R0, #1
+    BLEQ DRAW_NIGHT
+
+    CMP R0, #0
+    BLEQ DRAW_MORNING
+
+    POP {R0-R4, R6-R12, PC}
+    ENDFUNC
+
+DRAW_CLOCK_MODE FUNCTION 
+    PUSH {R0-R12, LR}
+	;Draw Background
+	BL DRAW_MORNING
+	MOV R8,#1
+	BL RTC_READ
+	BL BREAK_TIME
+	MOV R0,R3 ;Time Diff Minutes
+	MOV R9,R3 ;Theme Diff Minutes
+	ADD R9,#Time_Offset
+	;handling overflow in theme wait
+	PUSH {R2,R5,R6,R7}
+	MOV R6,R9
+	MOV R7,#60
+	BL REM
+	MOV R9,R5
+	POP {R2,R5,R6,R7}
+	
+	MOV R10,#WHITE
+	LDR R11,=TFT_INTERVAL
+	BL DELAY
+	BL SENSOR_READ
+	;MOV R11,#23	;Debug value for TEMPERATURE print test
+	MOV R12,R11
+	BL REFRESH_ALL
+__main_loop
+	;Reads Time into R2
+	BL RTC_READ
+	
+	;Handling Only Temperature change
+	BL SENSOR_READ
+	CMP R12,R11
+	BEQ	__SKIP_SENSOR
+	MOV R12,R11
+	BL REFRESH_TEMPERATURE
+__SKIP_SENSOR
+	
+	BL BREAK_TIME
+	
+	;Handling Full Theme Change
+	CMP R9,R3
+	BNE __SKIP_THEME
+	MOV R0,R3
+	MOV R9,R3
+	ADD R9,#Time_Offset;
+	MVN R8,R8
+	AND R8,#1
+	CMP R8,#1
+	BLEQ DRAW_MORNING
+	CMP R8,#0
+	BLEQ DRAW_NIGHT
+	MOV R10,#WHITE
+	BL REFRESH_ALL
+	B __SKIP_ALL
+__SKIP_THEME
+
+	;Handling Only Time Change
+	CMP R0,R3
+	BEQ __SKIP_ALL
+	MOV R0,R3
+	BL REFRESH_TIME
+	BL REFRESH_DATE
+__SKIP_ALL
+	B __main_loop
+    ENDFUNC
+END

@@ -57,82 +57,27 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 	
 	IMPORT DRAW_TEMPERATURE
 	IMPORT ERASE_TEMPERATURE
+
+	IMPORT GET_MODE
+	IMPORT DRAW_CURRENT_MODE
 	
 	IMPORT DRAW_DATE
 	IMPORT ERASE_DATE
-	
 	EXPORT DRAW_IMAGE
+
 	EXPORT __main
 
 	AREA	MYCODE, CODE, READONLY
 	ENTRY
 	
+	; Start in clock mode R5 Contains the current mode (0 - Clock, 1 - Alarm, 2 - Timer)
+	MOV R5, #0
 __main FUNCTION
 
 	;CALL FUNCTION SETUP
 	BL SETUP
-	;Draw Background
-	BL DRAW_MORNING
-	MOV R8,#1
-	BL RTC_READ
-	BL BREAK_TIME
-	MOV R0,R3 ;Time Diff Minutes
-	MOV R9,R3 ;Theme Diff Minutes
-	ADD R9,#Time_Offset
-	;handling overflow in theme wait
-	PUSH {R2,R5,R6,R7}
-	MOV R6,R9
-	MOV R7,#60
-	BL REM
-	MOV R9,R5
-	POP {R2,R5,R6,R7}
-	
-	MOV R10,#WHITE
-	LDR R11,=TFT_INTERVAL
-	BL DELAY
-	BL SENSOR_READ
-	;MOV R11,#23	;Debug value for TEMPERATURE print test
-	MOV R12,R11
-	BL REFRESH_ALL
-__main_loop
-	;Reads Time into R2
-	BL RTC_READ
-	
-	;Handling Only Temperature change
-	BL SENSOR_READ
-	CMP R12,R11
-	BEQ	__SKIP_SENSOR
-	MOV R12,R11
-	BL REFRESH_TEMPERATURE
-__SKIP_SENSOR
-	
-	BL BREAK_TIME
-	
-	;Handling Full Theme Change
-	CMP R9,R3
-	BNE __SKIP_THEME
-	MOV R0,R3
-	MOV R9,R3
-	ADD R9,#Time_Offset;
-	MVN R8,R8
-	AND R8,#1
-	CMP R8,#1
-	BLEQ DRAW_MORNING
-	CMP R8,#0
-	BLEQ DRAW_NIGHT
-	MOV R10,#WHITE
-	BL REFRESH_ALL
-	B __SKIP_ALL
-__SKIP_THEME
-
-	;Handling Only Time Change
-	CMP R0,R3
-	BEQ __SKIP_ALL
-	MOV R0,R3
-	BL REFRESH_TIME
-	BL REFRESH_DATE
-__SKIP_ALL
-	B __main_loop
+	BL GET_MODE
+	BL DRAW_CURRENT_MODE
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SETUP
