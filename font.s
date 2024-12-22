@@ -373,9 +373,9 @@ GO_DRAW
 
 DRAW_CLOCK
 	PUSH {R0-R12, LR}
-	MOV R10, #0
-	MOV R1, #205
-	MOV R2, #0
+	MOV R10, #0xFFFF
+	MOV R0, #205
+	MOV R1, #0
 
 	MOV R2, #'C'
 	BL DRAW
@@ -390,6 +390,50 @@ DRAW_CLOCK
 	BL DRAW
 	ADD R0, R0, #Char_small_size_x
 	MOV R2, #'K'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	POP {R0-R12, PC}
+
+DRAW_ALARM
+	PUSH {R0-R12, LR}
+	MOV R10, #0xFFFF
+	MOV R0, #205
+	MOV R1, #0
+	MOV R2, #'A'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	MOV R2, #'L'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	MOV R2, #'A'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	MOV R2, #'R'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	MOV R2, #'M'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	POP {R0-R12, PC}
+
+DRAW_TIMER
+	PUSH {R0-R12, LR}
+	MOV R10, #0xFFFF
+	MOV R0, #205
+	MOV R1, #0
+	MOV R2, #'T'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	MOV R2, #'I'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	MOV R2, #'M'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	MOV R2, #'E'
+	BL DRAW
+	ADD R0, R0, #Char_small_size_x
+	MOV R2, #'R'
 	BL DRAW
 	ADD R0, R0, #Char_small_size_x
 	POP {R0-R12, PC}
