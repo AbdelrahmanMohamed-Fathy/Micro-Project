@@ -100,6 +100,7 @@ Update_Handler
 	;Handling Mode Change
 	CMP R9,R1
 	BEQ __SKIP_MODE_CHANGE
+	MOV R0,R9
 	
 	CMP R9,#0
 	BNE __SKIP_CLK_CHANGE
