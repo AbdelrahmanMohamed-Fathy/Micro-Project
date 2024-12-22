@@ -160,11 +160,7 @@ Update_CLK
 	;R8: Day:1 Night:0
 	;R10: Prev Time
 	;R12: Prev Temp
-	PUSH {R0-R9,LR}
-	;Reading and breaking time
-	BL RTC_READ
-	BL BREAK_TIME
-	
+	PUSH {R0-R9,R11,LR}
 	;Handling temperature change
 	BL SENSOR_READ
 	CMP R12,R11
@@ -175,6 +171,10 @@ Update_CLK
 	
 __SKIP_SENSOR_CHANGE
 
+	;Reading and breaking time
+	BL RTC_READ
+	BL BREAK_TIME
+	
 	;Handling time change
 	CMP R10,R3
 	BEQ __SKIP_CLK_TIME_CHANGE
@@ -184,7 +184,7 @@ __SKIP_SENSOR_CHANGE
 	BL REFRESH_DATE
 	
 __SKIP_CLK_TIME_CHANGE
-	POP {R0-R9,PC}
+	POP {R0-R9,R11,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Update_ALR
 	;R8: Day:1 Night:0
