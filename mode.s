@@ -102,46 +102,13 @@ UPDATE_CLOCK_MODE FUNCTION
 	PUSH {R0-R12, LR}
 	MOV R8, #1
 	MOV R10, #0xFFFF
-
 	BL RTC_READ
 	BL BREAK_TIME
-	MOV R0,R3 ;Time Diff Minutes
-	MOV R9,R3 ;Theme Diff Minutes
-	ADD R9,#Time_Offset
-
-	;handling overflow in theme wait
-	PUSH {R2,R5,R6,R7}
-	MOV R6,R9
-	MOV R7,#60
-	BL REM
-	MOV R9,R5
-	POP {R2,R5,R6,R7}
 	BL DELAY
 	BL SENSOR_READ
-	
-	MOV R11,#23	;Debug value for TEMPERATURE print test
-	MOV R12,R11
+	MOV R11, #23
+	MOV R12, R11
 	BL REFRESH_ALL
-	;Reads Time into R2
-	BL RTC_READ
-	
-	;Handling Only Temperature change
-	BL SENSOR_READ
-	CMP R12,R11
-	BEQ	__SKIP_SENSOR
-	MOV R12,R11
-	BL REFRESH_TEMPERATURE
-__SKIP_SENSOR
-	BL BREAK_TIME
-	B __SKIP_ALL
-	;Handling Only Time Change
-	CMP R0,R3
-	BEQ __SKIP_ALL
-	MOV R0,R3
-	BL REFRESH_TIME
-	BL REFRESH_DATE
-__SKIP_ALL
-
 	POP {R0-R12, PC}
 	ENDFUNC
 
