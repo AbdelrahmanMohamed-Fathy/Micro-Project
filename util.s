@@ -92,22 +92,21 @@ DELAY_LOOP
 DELAY_uS FUNCTION
     ; Input: R11 = delay duration in microseconds
     ; Preserve registers
-	PUSH {R1-R4, LR}             ; Save registers
-    LDR R1, =0x40000024          ; TIM2_CNT address
-    MOV R4, R11                  ; Load delay value (in R0) into R4
-
-    ; Reset the counter
-    LDR R0, =0x40000010          ; TIM2_SR address
-    LDR R2, [R0]                 ; Load TIM2_SR
-    BIC R2, R2, #(1 << 0)        ; Clear UIF (update interrupt flag)
-    STR R2, [R0]                 ; Write back to TIM2_SR
-
-Wait_Loop
-    LDR R2, [R1]                 ; Read TIM2_CNT
-    CMP R2, R4                   ; Compare CNT with delay value
-    BLO Wait_Loop                ; Loop until CNT >= delay value
-
-    POP {R1-R4, PC}              ; Restore registers
+	PUSH {R0-R12, LR}       ; Save registers
+    LDR R1, =0x40000000     ; TIM2 base address
+    LDR R3, [R1, #0x2C]     ; Read TIM2_ARR (auto-reload)
+    MUL R3, R3, R11         ; Adjust ARR based on the delay
+	
+    STR R3, [R1, #0x2C]     ; Write adjusted ARR to TIM2_ARR
+	LDR R2, [R1, #0x00]     ; Read TIM2_CR1
+    LDR R2, [R1, #0x00]     ; Enable TIM2
+	
+Wait_TIM2
+    LDR R3, [R1, #0x10]     ; Check TIM2_SR (status register)
+    TST R3, #1              ; Check UIF (update interrupt flag)
+    BEQ Wait_TIM2           ; Wait until UIF is set
+	
+    POP {R0-R12, PC}        ; Restore registers
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DIGIT_TO_ASCII FUNCTION

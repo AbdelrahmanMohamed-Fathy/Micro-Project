@@ -18,24 +18,22 @@ GPIOx_ODR		EQU 0x0C
 TIM2_INIT FUNCTION
 
 	PUSH{R0-R1,LR}
-    LDR R0, =0x40021000       ; RCC base address
-    LDR R1, [R0, #0x1C]       ; RCC_APB1ENR address
-    ORR R1, R1, #1            ; Enable TIM2 clock (bit 0)
-    STR R1, [R0, #0x1C]       ; Write back to RCC_APB1ENR
+    ; Enable TIM2 Clock
+    LDR R1, =0x40021000     ; RCC base address
+    LDR R2, [R1, #0x1C]     ; Read RCC_APB1ENR
+    ORR R2, R2, #(1 << 0)   ; Enable TIM2 clock (bit 0)
+    STR R2, [R1, #0x1C]     ; Write back to RCC_APB1ENR
 
-    LDR R0, =0x40000000       ; TIM2 base address
-    MOV R1, #72               ; Prescaler value (PSC = 71)
-    STR R1, [R0, #0x28]       ; Write to TIM2_PSC
-    MOV R1, #0xFFFF           ; Auto-reload value
-    STR R1, [R0, #0x2C]       ; Write to TIM2_ARR
+    ; Configure TIM2
+    LDR R1, =0x40000000     ; TIM2 base address
+    MOV R2, #71             ; Prescaler value (72 MHz -> 1 MHz)
+    STR R2, [R1, #0x28]     ; Write to TIM2_PSC
 
-    LDR R1, [R0, #0x0C]       ; Read TIM2_DIER
-    ORR R1, R1, #1            ; Enable update interrupt (UIE)
-    STR R1, [R0, #0x0C]       ; Write back to TIM2_DIER
-
-    LDR R1, [R0, #0x00]       ; Read TIM2_CR1
-    ORR R1, R1, #1            ; Enable TIM2 counter (CEN)
-    STR R1, [R0, #0x00]       ; Write back to TIM2_CR1
+    ; Configure TIM2_CR1
+    LDR R2, [R1, #0x00]     ; Read TIM2_CR1
+    ORR R2, R2, #(1 << 3)   ; Enable one-pulse mode (OPM)
+    BIC R2, R2, #(1 << 4)   ; Set direction to up-counter (DIR = 0)
+    STR R2, [R1, #0x00]     ; Write back to TIM2_CR1
 
 	POP {R0-R1,PC}
 	ENDFUNC
