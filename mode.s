@@ -89,7 +89,7 @@ DRAW_CURRENT_MODE FUNCTION
 
     ; set previous minutes to unkown value
     MOV R0, #100
-    BLEQ UPDATE_CURRENT_MODE
+    BL UPDATE_CURRENT_MODE
 
 _skip_draw_mode
     POP {R0-R12, PC}
