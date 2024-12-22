@@ -71,7 +71,7 @@ SENSOR_READ FUNCTION
 	;outputs sensor data to R2
 	;R2: sensor data output
 	;R11: Temp output
-	PUSH {R0-R4,LR}
+	PUSH {R0-R6,LR}
 	
 	;setting standy by mode
 	LDR R0,=GPIOB_BASE + GPIOx_ODR
@@ -142,7 +142,21 @@ __CHECKSUM
 	CMP R3,#40
 	BNE __CHECKSUM
 	
-	AND R2,R2,#0x3F
+__CHECK
+	AND R5, R2, #0x000000FF
+	AND R6, R2, #0x0000FF00
+	LSR R6, #8
+	ADD R5, R6
+	AND R6, R2, #0x00FF0000
+	LSR R6, #16
+	ADD R5, R6
+	AND R6, R2, #0xFF000000
+	LSR R6, #24
+	ADD R5, R6
+	CMP R5, R4
+	BNE SENSOR_READ
+
+	AND R2,R2,#0x000000FF
 	;LSR R2,#8
 	MOV R11, R2
 	
@@ -150,7 +164,7 @@ __CHECKSUM
 	BL __PULL_DOWN_WAIT
 	BL SENSOR_INIT
 
-	POP {R0-R4,PC}
+	POP {R0-R6,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 __PULL_DOWN_WAIT
