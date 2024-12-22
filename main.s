@@ -34,36 +34,12 @@ Time_Offset		EQU 2
 TFT_INTERVAL 		EQU 0x4FFFFF
 	
 	IMPORT LCD_INIT
-	IMPORT DRAW_RECTANGLE_FILLED
 	IMPORT RTC_INIT
-	IMPORT RTC_READ
-	IMPORT DIGIT_TO_ASCII
-	IMPORT SENSOR_READ
-	IMPORT SENSOR_INIT
-	IMPORT BREAK_TIME
-	IMPORT ERASE_TIME
 	IMPORT TIM2_INIT
-	IMPORT REM
-	IMPORT DELAY
-
-	IMPORT DRAW
-	IMPORT DRAW_MORNING
-	IMPORT DRAW_NIGHT
-	IMPORT DRAW_LARGE
-	IMPORT DRAW_TIME
-		
-	IMPORT DRAW_TIME
-	IMPORT ERASE_TIME
 	
-	IMPORT DRAW_TEMPERATURE
-	IMPORT ERASE_TEMPERATURE
-
 	IMPORT GET_MODE
 	IMPORT DRAW_CURRENT_MODE
 
-	IMPORT DRAW_DATE
-	IMPORT ERASE_DATE
-	EXPORT DRAW_IMAGE
 
 	EXPORT __main
 
@@ -124,98 +100,3 @@ SETUP
 	BL TIM2_INIT
 	
 	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_ALL
-	;R3: Minutes Input
-	;R4: Hours Input
-	;R5: Day Input
-	;R6: Month Input
-	;R7: Year Input
-	;R8: Day:1 Night:0
-	;R10: Test Color
-	PUSH {R0-R12,LR}
-	
-	BL REFRESH_TIME
-	BL REFRESH_TEMPERATURE
-	BL REFRESH_DATE
-	
-	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_TIME
-	;R3: Mintues Input
-	;R4: Hours Input
-	;R8: Day:1 Night:0
-	;R10: Color input
-	PUSH {R0-R12,LR}
-	
-	BL ERASE_TIME
-	BL DRAW_TIME
-	
-	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_TEMPERATURE
-	;R11: Temp
-	;R8: Day:1 Night:0
-	;R10: Color input
-	PUSH {R0-R12,LR}
-	
-	BL ERASE_TEMPERATURE
-	BL DRAW_TEMPERATURE
-	
-	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_DATE
-	;R5: Day Input
-	;R6: Month Input
-	;R7: Year Input
-	;R8: Day:1 Night:0
-	;R10: Color input
-	PUSH {R0-R12,LR}
-	
-	BL ERASE_DATE
-	BL DRAW_DATE
-	
-	POP {R0-R12,PC}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DRAW_IMAGE
-	; r0 - dx
-	; r1 - dy
-	; r9 - table address
-
-    PUSH {R0-R12, LR}
-	
-    MOV R5, R0         ; base x
-    MOV R6, R1         ; base y
-
-    MOV R11, #0X1FF
-
-DRAW_LOOP
-    LDR R7, [R9], #4   ; Load packed start (x0 y0)
-    LDR R8, [R9], #4   ; Load packed end (x1, y1)
-    LDR R10, [R9], #4  ; Load color
-    CMP R7, #0         ; Check if end of table
-    BEQ END_DRAW
-
-    MOV R0, R7, LSR #9 ; Extract x0
-    AND R0, R0, R11 ; Mask lower 9 bits
-    MOV R1, R7         ; Extract y0
-    AND R1, R1, R11 ; Mask lower 9 bits
-
-    MOV R3, R8, LSR #9 ; Extract x1
-    AND R3, R3, R11 ; Mask lower 9 bits
-    MOV R4, R8         ; Extract y1
-    AND R4, R4, R11 ; Mask lower 9 bits
-
-    ; x0 - R0, y0 - R1, x1 - R3, y1 - R4
-
-    ADD R0, R5, R0
-    ADD R1, R6, R1
-    ADD R3, R5, R3
-    ADD R4, R6, R4
-
-    BL DRAW_RECTANGLE_FILLED
-    B DRAW_LOOP
-
-END_DRAW
-    POP {R0-R12, PC}
-	END
