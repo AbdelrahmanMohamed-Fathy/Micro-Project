@@ -103,9 +103,16 @@ SENSOR_READ FUNCTION
 	LDR R0,=GPIOB_BASE + GPIOx_CRH
 	MOV R2,#7
 	BL set_pin
+
+	MOV R11, #40
+	BL DELAY_uS
 	
 ;Waiting for start message
 	BL __PULL_DOWN_WAIT
+
+	MOV R11, #80
+	BL DELAY_uS
+	
 	BL __PULL_UP_WAIT
 ;Recieving message
 	MOV R2,#0
