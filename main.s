@@ -14,9 +14,11 @@
 	AREA	MYCODE, CODE, READONLY
 	ENTRY
 	
+	; R0 previous time.
 	; Start in clock mode R9 Contains the current mode (0 - Clock, 1 - Alarm, 2 - Timer)
 	; R10 specifies whether to draw or not #1 means draw, #0 means don't draw
 __main FUNCTION
+	MOV R0, #100
 	MOV R9, #0
 	MOV R10,#1
 	BL SETUP
