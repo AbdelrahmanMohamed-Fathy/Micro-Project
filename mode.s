@@ -73,7 +73,7 @@ DRAW_CLOCK_MODE FUNCTION
 	;MOV R11,#23	;Debug value for TEMPERATURE print test
 	MOV R12,R11
 	BL REFRESH_ALL
-__main_loop
+;__main_loop
 	;Reads Time into R2
 	BL RTC_READ
 	
@@ -111,6 +111,6 @@ __SKIP_THEME
 	BL REFRESH_TIME
 	BL REFRESH_DATE
 __SKIP_ALL
-	B __main_loop
+	;B __main_loop
     ENDFUNC
 END

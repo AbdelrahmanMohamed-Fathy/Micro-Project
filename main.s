@@ -60,7 +60,7 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 
 	IMPORT GET_MODE
 	IMPORT DRAW_CURRENT_MODE
-	
+
 	IMPORT DRAW_DATE
 	IMPORT ERASE_DATE
 	EXPORT DRAW_IMAGE
@@ -74,10 +74,12 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 	MOV R5, #0
 __main FUNCTION
 
+main_loop
 	;CALL FUNCTION SETUP
 	BL SETUP
 	BL GET_MODE
 	BL DRAW_CURRENT_MODE
+	B main_loop
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SETUP
