@@ -54,8 +54,9 @@ YEARS           	EQU 60*60*24*30*12
 
 ;General Constants
 LETTER_SPACING 		EQU 15
-MODE_BIT        	EQU 12 ;change clock mode pin in GPIOB_IDR
-	
+MODE_BIT        	EQU 12 ; change clock mode pin in GPIOB_IDR
+CONFIG_BIT			EQU 13 
+
 ;Minutes between theme switch (Theme changes after Time_Offset)
 Time_Offset			EQU 2
 

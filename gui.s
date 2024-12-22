@@ -16,6 +16,7 @@
 		
 	EXPORT DRAW_DATE
 	EXPORT ERASE_DATE
+	EXPORT ERASE_COLON
 	
 	AREA mycode, CODE, READONLY
 
@@ -69,6 +70,19 @@ ERASE_TIME FUNCTION
 	BL DRAW_RECTANGLE_FILLED
 	POP {R0-R12,PC}
 	ENDFUNC
+
+ERASE_COLON FUNCTION
+	;R8: Day:1 Night:0 Input
+	PUSH {R0-R12,LR}
+	MOV R0,#Time_pos_x + (Char_big_size_x*2)
+	MOV R1,#Time_pos_y
+	MOV R3,#Time_pos_x + (Char_big_size_x*3)
+	MOV R4,#Time_pos_y + Char_big_size_y - 15
+	BL SET_COLOR
+	BL DRAW_RECTANGLE_FILLED
+	POP {R0-R12,PC}
+	ENDFUNC
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DRAW_TEMPERATURE FUNCTION
 	;R11: Temp
