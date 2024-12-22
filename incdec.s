@@ -1,14 +1,5 @@
-;this is to be the base the others use, have it implemented in alarm/timer set then have the file removed
-GPIOB_BASE 		EQU 0X40010C00
-GPIOx_IDR 		EQU 0x08
 INPUT_PINS      EQU GPIOB_BASE + GPIOx_IDR
-SECONDS         EQU 1
-MINUTES         EQU 60
-HOURS           EQU 60*60
-DAYS            EQU 60*60*24
-MONTHS          EQU 60*60*24*30
-YEARS           EQU 60*60*24*30*12
-
+    INCLUDE constants.inc
     AREA mycode, CODE, READONLY
 
     
