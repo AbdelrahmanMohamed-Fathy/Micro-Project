@@ -410,11 +410,6 @@
               <FilePath>.\rtc_driver.s</FilePath>
             </File>
             <File>
-              <FileName>sound.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\sound.s</FilePath>
-            </File>
-            <File>
               <FileName>sensor_driver.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\sensor_driver.s</FilePath>
@@ -443,6 +438,11 @@
               <FileName>mode.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\mode.s</FilePath>
+            </File>
+            <File>
+              <FileName>constants.inc</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\constants.inc</FilePath>
             </File>
           </Files>
         </Group>

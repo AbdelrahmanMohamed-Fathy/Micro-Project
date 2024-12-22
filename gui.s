@@ -7,6 +7,13 @@
 	IMPORT DIGIT_TO_ASCII
 	IMPORT DRAW_MONTH
 	IMPORT DRAW_DAY
+		
+	IMPORT DRAW_CLOCK
+	IMPORT DRAW_ALARM
+	IMPORT DRAW_TIMER
+		
+	EXPORT DRAW_CLOCK_TXT
+	EXPORT ERASE_CLOCK_TXT
 
 	EXPORT DRAW_TIME
 	EXPORT ERASE_TIME
@@ -23,8 +30,8 @@ DRAW_TIME FUNCTION
 	;Draws time from input Hours in R4 and Minutes in R3
 	;Minutes: R3
 	;Hours: R4
-	;Color: R10
 	PUSH {R0-R12, LR}
+	MOV R10,#WHITE
 	;Drawing Hours
 	LDR R0,=Time_pos_x
 	LDR R1,=Time_pos_y
@@ -72,8 +79,8 @@ ERASE_TIME FUNCTION
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DRAW_TEMPERATURE FUNCTION
 	;R11: Temp
-	;Color: R10
 	PUSH {R0-R12,LR}
+	MOV R10,#WHITE
 	LDR R0,=Temp_pos_x
 	LDR R1,=Temp_pos_y
 	MOV R6,R11
@@ -110,8 +117,8 @@ DRAW_DATE FUNCTION
 	;R5: Day Input
 	;R6: Month Input
 	;R7: Year Input
-	;Color: R10
 	PUSH {R0-R12,LR}
+	MOV R10,#WHITE
 	;Drawing the Day/Month
 	PUSH {R7}
 	PUSH {R6}
@@ -209,6 +216,35 @@ __NIGHT
 	B __COLOR_OUT
 __COLOR_OUT
 	POP {R0-R9,R11-R12,PC}
+	ENDFUNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DRAW_CLOCK_TXT FUNCTION
+	;R9: CLK:0 ALR:1 TIM:2
+	PUSH {R0-R12,LR}
+	MOV R10,#WHITE
+	
+	CMP R9,#0
+	BLEQ DRAW_CLOCK
+	
+	CMP R9,#1
+	BLEQ DRAW_ALARM
+	
+	CMP R9,#2
+	BLEQ DRAW_TIMER
+	
+	POP {R0-R12,PC}
+	ENDFUNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ERASE_CLOCK_TXT FUNCTION
+	PUSH {R0-R12,LR}
+	;R8: Day:1 Night:0
+	MOV R0,#Mode_pos_x
+	MOV R1,#Mode_pos_y
+	MOV R3,#Mode_pos_x + (Char_small_size_x*5)
+	MOV R4,#Mode_pos_y + Char_small_size_y - 5
+	BL SET_COLOR
+	BL DRAW_RECTANGLE_FILLED
+	POP {R0-R12,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

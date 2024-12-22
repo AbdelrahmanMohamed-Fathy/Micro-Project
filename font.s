@@ -1,4 +1,4 @@
-Char_small_size_x	EQU 15
+	INCLUDE constants.inc
 	EXPORT DRAW_LARGE
 	EXPORT DRAW
 	EXPORT DRAW_ALARM
@@ -377,8 +377,8 @@ GO_DRAW
 DRAW_CLOCK
 	PUSH {R0-R12, LR}
 	MOV R10, #0xFFFF
-	MOV R0, #205
-	MOV R1, #0
+	MOV R0, #Mode_pos_x
+	MOV R1, #Mode_pos_y
 
 	MOV R2, #'C'
 	BL DRAW
@@ -400,8 +400,8 @@ DRAW_CLOCK
 DRAW_ALARM
 	PUSH {R0-R12, LR}
 	MOV R10, #0xFFFF
-	MOV R0, #205
-	MOV R1, #0
+	MOV R0, #Mode_pos_x
+	MOV R1, #Mode_pos_y
 	MOV R2, #'A'
 	BL DRAW
 	ADD R0, R0, #Char_small_size_x
@@ -422,8 +422,8 @@ DRAW_ALARM
 DRAW_TIMER
 	PUSH {R0-R12, LR}
 	MOV R10, #0xFFFF
-	MOV R0, #205
-	MOV R1, #0
+	MOV R0, #Mode_pos_x
+	MOV R1, #Mode_pos_y
 	MOV R2, #'T'
 	BL DRAW
 	ADD R0, R0, #Char_small_size_x

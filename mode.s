@@ -24,6 +24,10 @@
 
 	IMPORT DRAW_DATE
 	IMPORT ERASE_DATE
+		
+	IMPORT DRAW_CLOCK_TXT
+	IMPORT ERASE_CLOCK_TXT
+		
     IMPORT DRAW_CLOCK
     IMPORT DRAW_ALARM
     IMPORT DRAW_TIMER
@@ -80,112 +84,190 @@ _skip_draw_mode
     ENDFUNC
 
 DRAW_CLOCK_MODE FUNCTION 
-    PUSH {R0-R12, LR}
-    
-	;Draw Background
+    PUSH {R0-R7,R9-R12, LR}
 	BL DRAW_MORNING
-    BL DRAW_CLOCK
-	MOV R8,#1
-	BL RTC_READ
-	BL BREAK_TIME
-	MOV R0,R3 ;Time Diff Minutes
-	MOV R9,R3 ;Theme Diff Minutes
-	ADD R9,#Time_Offset
-	;handling overflow in theme wait
-	PUSH {R2,R5,R6,R7}
-	MOV R6,R9
-	MOV R7,#60
-	BL REM
-	MOV R9,R5
-	POP {R2,R5,R6,R7}
-	
-	MOV R10,#WHITE
-	LDR R11,=TFT_INTERVAL
-	BL DELAY
-	BL SENSOR_READ
-	;MOV R11,#23	;Debug value for TEMPERATURE print test
-	MOV R12,R11
-	BL REFRESH_ALL
-	;Reads Time into R2
-	BL RTC_READ
-	
-	;Handling Only Temperature change
-	BL SENSOR_READ
-	CMP R12,R11
-	BEQ	__SKIP_SENSOR
-	MOV R12,R11
-	BL REFRESH_TEMPERATURE
-__SKIP_SENSOR
-	
-	BL BREAK_TIME
-	
-	;Handling Full Theme Change
-	CMP R9,R3
-	BNE __SKIP_THEME
-	MOV R0,R3
-	MOV R9,R3
-	ADD R9,#Time_Offset;
-	MVN R8,R8
-	AND R8,#1
-	CMP R8,#1
-	BLEQ DRAW_MORNING
-	CMP R8,#0
-	BLEQ DRAW_NIGHT
-	MOV R10,#WHITE
-	BL REFRESH_ALL
-	B __SKIP_ALL
-__SKIP_THEME
-
-	;Handling Only Time Change
-	CMP R0,R3
-	BEQ __SKIP_ALL
-	MOV R0,R3
-	BL REFRESH_TIME
-	BL REFRESH_DATE
-__SKIP_ALL
-    POP {R0-R12, PC}
+    MOV R8,#0
+    POP {R0-R7,R9-R12, PC}
     ENDFUNC
 
 DRAW_ALARM_MODE FUNCTION 
-    PUSH {R0-R12, LR}
-    BL DRAW_NIGHT
-    BL DRAW_ALARM
-    POP {R0-R12, PC}
+    PUSH {R0-R7,R9-R12, LR}
+	BL DRAW_NIGHT
+    MOV R8,#0
+    POP {R0-R7,R9-R12, PC}
     ENDFUNC
 
 DRAW_TIMER_MODE FUNCTION 
-    PUSH {R0-R12, LR}
-    BL DRAW_MORNING
-    BL DRAW_TIMER
-    POP {R0-R12, PC}
+    PUSH {R0-R7,R9-R12, LR}
+	BL DRAW_MORNING
+    MOV R8,#1
+    POP {R0-R7,R9-R12, PC}
     ENDFUNC
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-REFRESH_ALL
+Update_Handler
+	;R0: Prev Mode
+	;R8: Day:1 Night:0
+	;R9: CLK:0 ALR:1 TIM:2
+	;R10: Prev Time
+	;R12: Prev Temp
+	PUSH {R1-R9,R11,LR}
+	
+	;This Function handles Update Logic for all modes simultaneously
+	
+	;Handling Mode Change
+	CMP R9,R1
+	BEQ __SKIP_MODE_CHANGE
+	
+	CMP R9,#0
+	BNE __SKIP_CLK_CHANGE
+	
+	BL DRAW_CLOCK_MODE
+	BL REFRESH_CLK
+	
+__SKIP_CLK_CHANGE
+
+	CMP R9,#1
+	BNE __SKIP_ALR_CHANGE
+	
+	BL DRAW_ALARM_MODE
+	BL REFRESH_ALR
+	
+__SKIP_ALR_CHANGE
+
+	CMP R9,#2
+	BNE __SKIP_TIM_CHANGE
+	
+	BL DRAW_TIMER_MODE
+	BL REFRESH_TIM
+	
+__SKIP_TIM_CHANGE
+
+	B __SKIP_ALL
+__SKIP_MODE_CHANGE
+	
+	
+	;Handling Updates
+	CMP R9,#0
+	BNE __SKIP_CLK_UPDATE
+	
+	BL Update_CLK
+	
+__SKIP_CLK_UPDATE
+
+	CMP R9,#1
+	BNE __SKIP_ALR_UPDATE
+	
+	BL Update_ALR
+	
+__SKIP_ALR_UPDATE
+
+	CMP R9,#2
+	BNE __SKIP_TIM_UPDATE
+	
+	BL Update_TIM
+	
+__SKIP_TIM_UPDATE
+
+
+__SKIP_ALL
+	POP {R1-R9,R11,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Update_CLK
+	;R8: Day:1 Night:0
+	;R10: Prev Time
+	;R12: Prev Temp
+	PUSH {R0-R9,LR}
+	;Reading and breaking time
+	BL RTC_READ
+	BL BREAK_TIME
+	
+	;Handling temperature change
+	BL SENSOR_READ
+	CMP R12,R11
+	BEQ	__SKIP_SENSOR_CHANGE
+	MOV R12,R11
+	BL REFRESH_TEMPERATURE
+__SKIP_SENSOR_CHANGE
+
+	;Handling time change
+	CMP R10,R3
+	BEQ __SKIP_CLK_TIME_CHANGE
+	MOV R10,R3
+	BL REFRESH_TIME
+	BL REFRESH_DATE
+	
+__SKIP_CLK_TIME_CHANGE
+	POP {R0-R9,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Update_ALR
+	;R8: Day:1 Night:0
+	;R10: Prev Time
+	PUSH {R0-R9,R11-R12,LR}
+	
+	POP {R0-R9,R11-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Update_TIM
+	;R8: Day:1 Night:0
+	;R10: Prev Time
+	PUSH {R0-R9,R11-R12,LR}
+	
+	POP {R0-R9,R11-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_TIM
+	;R3: Minutes Input
+	;R4: Hours Input
+	;R5: Seconds Input
+	;R8: Day:1 Night:0
+	PUSH {R0-R12,LR}
+	
+	BL REFRESH_TIME
+	BL REFRESH_CLOCK_MODE
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_ALR
+	;R3: Minutes Input
+	;R4: Hours Input
+	;R8: Day:1 Night:0
+	PUSH {R0-R12,LR}
+	
+	BL REFRESH_TIME
+	BL REFRESH_CLOCK_MODE
+	
+	POP {R0-R12,PC}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+REFRESH_CLK
 	;R3: Minutes Input
 	;R4: Hours Input
 	;R5: Day Input
 	;R6: Month Input
 	;R7: Year Input
 	;R8: Day:1 Night:0
-	;R10: Test Color
+	;R9: CLK:0 ALR:1 TIM:2
+	;R11: Temperature
 	PUSH {R0-R12,LR}
 	
 	BL REFRESH_TIME
-	BL REFRESH_TEMPERATURE
 	BL REFRESH_DATE
+	BL REFRESH_TEMPERATURE
+	BL REFRESH_CLOCK_MODE
 	
 	POP {R0-R12,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 REFRESH_CLOCK_MODE
 	;R9: CLK:0 ALR:1 TIM:2
+	PUSH {R0-R12,LR}
 	
+	BL ERASE_CLOCK_TXT
+	BL DRAW_CLOCK_TXT
+	
+	POP {R0-R12,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 REFRESH_TIME
 	;R3: Mintues Input
 	;R4: Hours Input
 	;R8: Day:1 Night:0
-	;R10: Color input
 	PUSH {R0-R12,LR}
 	
 	BL ERASE_TIME
@@ -196,7 +278,6 @@ REFRESH_TIME
 REFRESH_TEMPERATURE
 	;R11: Temp
 	;R8: Day:1 Night:0
-	;R10: Color input
 	PUSH {R0-R12,LR}
 	
 	BL ERASE_TEMPERATURE
@@ -209,7 +290,6 @@ REFRESH_DATE
 	;R6: Month Input
 	;R7: Year Input
 	;R8: Day:1 Night:0
-	;R10: Color input
 	PUSH {R0-R12,LR}
 	
 	BL ERASE_DATE
