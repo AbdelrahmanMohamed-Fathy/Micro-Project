@@ -43,7 +43,7 @@
 GET_MODE FUNCTION
     ; R9 - Changes the R9 register with the current Mode
     
-    PUSH {R0-R8, R11-R12, LR}
+    PUSH {R0-R8, R10-R12, LR}
 
     LDR R0, =GPIOB_BASE + GPIOx_IDR
 
@@ -62,7 +62,7 @@ GET_MODE FUNCTION
     CMP R9, #3
     MOVEQ R9, #0
 
-    POP {R0-R8, R11-R12, PC}
+    POP {R0-R8, R10-R12, PC}
     ENDFUNC
 	
 DRAW_CLOCK_MODE FUNCTION 
@@ -180,9 +180,8 @@ __SKIP_SENSOR_CHANGE
 	BEQ __SKIP_CLK_TIME_CHANGE
 	
 	MOV R10,R3
-	BL REFRESH_TIM
-	BL REFRESH_DATE
-	
+	BL REFRESH_CLK
+
 __SKIP_CLK_TIME_CHANGE
 	POP {R0-R9,R11,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
