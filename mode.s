@@ -98,7 +98,7 @@ Update_Handler
 	;This Function handles Update Logic for all modes simultaneously
 	
 	;Handling Mode Change
-	CMP R9,R1
+	CMP R9,R0
 	BEQ __SKIP_MODE_CHANGE
 	MOV R0,R9
 	
