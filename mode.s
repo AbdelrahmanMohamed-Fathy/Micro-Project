@@ -100,7 +100,9 @@ _skip_update_mode
 
 UPDATE_CLOCK_MODE FUNCTION 
 	PUSH {R0-R12, LR}
-	MOV R8, #0
+	MOV R8, #1
+	MOV R10, #0
+
 	BL RTC_READ
 	BL BREAK_TIME
 	MOV R0,R3 ;Time Diff Minutes
