@@ -82,7 +82,7 @@ _skip_draw_mode
     POP {R0-R12, PC}
     ENDFUNC
 
-UDPATE_CURRENT_MODE FUNCTION 
+UPDATE_CURRENT_MODE FUNCTION 
     PUSH {R0-R12, LR}
     CMP R10, #0
     BEQ _skip_update_mode
