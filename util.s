@@ -82,7 +82,7 @@ DELAY_uS FUNCTION
     STR R2, [R0]                 ; Write back to TIM2_SR
 
 Change
-	LDR R2, =0x40000010
+	LDR R2, [R1]
 	CMP R3, R2
 	BEQ Change
 
