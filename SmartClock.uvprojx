@@ -439,6 +439,11 @@
               <FileType>2</FileType>
               <FilePath>.\day.s</FilePath>
             </File>
+            <File>
+              <FileName>mode.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\mode.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
