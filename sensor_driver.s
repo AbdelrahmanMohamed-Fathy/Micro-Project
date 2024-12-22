@@ -79,24 +79,6 @@ SENSOR_READ FUNCTION
 	;R11: Temp output
 	PUSH {R0-R4,LR}
 	
-	;Setting B9 to output at 50MHZ
-	LDR R0,=GPIOB_BASE + GPIOx_CRH
-	MOV R2,#4
-	BL set_pin
-	
-	LDR R0,=GPIOB_BASE + GPIOx_CRH
-	MOV R2,#5
-	BL set_pin
-	
-	;Setting B9 to output at push-pull
-	LDR R0,=GPIOB_BASE + GPIOx_CRH
-	MOV R2,#6
-	BL reset_pin
-	
-	LDR R0,=GPIOB_BASE + GPIOx_CRH
-	MOV R2,#7
-	BL reset_pin
-	
 	;setting standy by mode
 	LDR R0,=GPIOB_BASE + GPIOx_ODR
 	MOV R2,#9
@@ -107,7 +89,7 @@ SENSOR_READ FUNCTION
 	LDR R0,=GPIOB_BASE + GPIOx_ODR
 	MOV R2,#9
 	BL set_pin
-	MOV R11,#40
+	MOV R11,#30
 	BL DELAY_uS
 	
 	;Setting B9 to input
@@ -118,7 +100,6 @@ SENSOR_READ FUNCTION
 	LDR R0,=GPIOB_BASE + GPIOx_CRH
 	MOV R2,#5
 	BL reset_pin
-	
 	
 	;Setting B9 to input at push-pull
 	LDR R0,=GPIOB_BASE + GPIOx_CRH
