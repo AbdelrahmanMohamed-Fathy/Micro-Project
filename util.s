@@ -81,16 +81,16 @@ DELAY_uS FUNCTION
     BIC R2, R2, #(1 << 0)        ; Clear UIF (update interrupt flag)
     STR R2, [R0]                 ; Write back to TIM2_SR
 
-Wait_Change
-	LDR R2, =0x40000010
+Change
+	LDR R2, [R1]
 	CMP R3, R2
-	BEQ Wait_Change
+	BEQ Change
 
-Wait_Loop
+Wait
 	SUB R4, R4, #1
     CMP R4, #0
 	BEQ Exit                   
-    B Wait_Change              
+    B Wait             
 Exit
     POP {R1-R4, PC}              ; Restore registers
 	ENDFUNC
