@@ -35,6 +35,21 @@
 	IMPORT DELAY
 	AREA MYCODE, CODE, READONLY
 
+GET_CONFIG FUNCTION    
+    PUSH {R0, R2-R8, R11-R12, LR}
+
+    LDR R0, =GPIOB_BASE + GPIOx_IDR
+
+    LDR R2, [R0]
+    LSR R2, R2, #CONFIG_BIT
+    AND R2, R2, #1
+
+    CMP R2, #1
+    MOV R1, #0
+    MOVEQ R1, #1
+
+    POP {R0, R2-R8, R11-R12, PC}
+    ENDFUNC
 
 GET_MODE FUNCTION
     ; R9 - Changes the R9 register with the current Mode
@@ -42,9 +57,6 @@ GET_MODE FUNCTION
     PUSH {R0-R8, R11-R12, LR}
 
     LDR R0, =GPIOB_BASE + GPIOx_IDR
-
-    MOV R11, #55000    
-    ;BL DELAY
 
     LDR R1, [R0]
     LSR R1, R1, #MODE_BIT
@@ -61,8 +73,6 @@ GET_MODE FUNCTION
     POP {R0-R8, R11-R12, PC}
     ENDFUNC
 
-
-
 DRAW_CURRENT_MODE FUNCTION 
     PUSH {R0-R12, LR}
     CMP R10, #0
@@ -76,6 +86,10 @@ DRAW_CURRENT_MODE FUNCTION
 
     CMP R9, #2
     BLEQ DRAW_TIMER_MODE
+
+    ; set previous minutes to unkown value
+    MOV R0, #100
+    BLEQ UPDATE_CURRENT_MODE
 
 _skip_draw_mode
     POP {R0-R12, PC}
