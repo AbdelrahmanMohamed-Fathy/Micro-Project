@@ -166,7 +166,7 @@ __SKIP_THEME
 	BL REFRESH_TIME
 	BL REFRESH_DATE
 __SKIP_ALL
-    PUSH {R0-R12, PC}
+    POP {R0-R12, PC}
     ENDFUNC
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
