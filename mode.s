@@ -93,7 +93,7 @@ GET_MODE FUNCTION
 
 DRAW_CURRENT_MODE FUNCTION 
     PUSH {R0-R12, LR}
-    CMP R10, #1
+    CMP R10, #0
     BEQ _skip_draw_mode
 
     CMP R9, #0
