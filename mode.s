@@ -69,7 +69,7 @@ TFT_INTERVAL 		EQU 0x4FFFFF
 GET_MODE FUNCTION
     ; R9 - Changes the R9 register with the current Mode
     
-    PUSH {R0-R4, R6-R12, LR}
+    PUSH {R0-R8, R10-R12, LR}
 
     LDR R0, =GPIOB_BASE + GPIOx_IDR
 
@@ -86,7 +86,7 @@ GET_MODE FUNCTION
     CMP R9, #3
     MOVEQ R9, #0
 
-    POP {R0-R4, R6-R12, PC}
+    POP {R0-R8, R10-R12, PC}
     ENDFUNC
 
 DRAW_CURRENT_MODE FUNCTION 
