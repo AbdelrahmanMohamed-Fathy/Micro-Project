@@ -28,6 +28,8 @@ RTC_PRLH 			EQU 0x08
 RTC_PRLL 			EQU 0x0C
 RTC_CNTH 			EQU 0x18
 RTC_CNTL 			EQU 0x1C
+RTC_ALRH			EQU 0x20
+RTC_ALRL			EQU 0x24
 	
 ;just some color codes, 16-bit colors coded in RGB 565
 BLACK				EQU 0x0000
