@@ -1,19 +1,5 @@
-;TFT_Positions
-Time_pos_x			EQU 90
-Time_pos_y			EQU 75
-Char_big_size_x		EQU 59
-Char_big_size_y		EQU 117
-Char_small_size_x	EQU 15
-Char_small_size_y	EQU 28
-Day_pos_x			EQU	5
-Day_pos_y			EQU	5
-Month_pos_x			EQU	5
-Month_pos_y			EQU	30
-Year_pos_x			EQU 212
-Year_pos_y			EQU 62
-Temp_pos_x			EQU 414
-Temp_pos_y			EQU	10
-
+	INCLUDE constants.inc
+	
 	IMPORT REM
 	IMPORT DRAW_RECTANGLE_FILLED
 	IMPORT DRAW

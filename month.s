@@ -1,5 +1,5 @@
-Char_small_size_x	EQU 15
 
+	INCLUDE constants.inc
 	EXPORT DRAW_MONTH
 	IMPORT DRAW
 	AREA MYCODE, CODE, READONLY
