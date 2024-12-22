@@ -148,11 +148,12 @@ __CHECKSUM
 	CMP R3,#40
 	BNE __CHECKSUM
 	
+	AND R2,R2,#0x0000FF00
+	LSR R2,#8
+
 	BL __PULL_DOWN_WAIT
 	BL SENSOR_INIT
-	
-	;TODO Verify message
-	
+
 	POP {R0-R4,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
