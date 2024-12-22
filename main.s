@@ -81,7 +81,7 @@ __main FUNCTION
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SETUP
-	PUSH {R0-R2, LR}
+	PUSH {R0-R12, LR}
 	;to enable port A
 	LDR R0 ,=RCC_BASE + RCC_APB2ENR 
 	LDR R1,[R0]
@@ -96,6 +96,24 @@ SETUP
 	LDR R0, =GPIOA_BASE + GPIOx_CRH
 	LDR R1,=0x33333333
 	STR R1,[R0]
+
+	;to enable port B
+	LDR R0 ,=RCC_BASE + RCC_APB2ENR 
+	LDR R1,[R0]
+	LDR R2,=0x08
+	ORR R1,R1,R2
+	STR R1,[R0]
+
+	;to configure port B as input(medium speed)
+	LDR R0, =GPIOB_BASE + GPIOx_CRL 
+	LDR R1,=0x88888888
+	STR R1,[R0]
+	LDR R0, =GPIOB_BASE + GPIOx_CRH
+	LDR R1,=0x88888888
+	STR R1,[R0]
+
+	;Enabling B0,B10,B11,B12,B13
+	
 	
 	;Initializing TFT LCD
 	BL LCD_INIT
@@ -103,7 +121,7 @@ SETUP
 	BL SENSOR_INIT
 	BL TIM2_INIT
 	
-	POP {R0-R2,PC}
+	POP {R0-R12,PC}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 REFRESH_ALL
 	;R3: Minutes Input
