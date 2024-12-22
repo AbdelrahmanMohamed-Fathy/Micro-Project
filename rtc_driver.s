@@ -112,11 +112,17 @@ RTC_INIT FUNCTION
 	BL waitRTC
 	BL set_pin
 	
-	;;Enabling Seconds Interrupt
-	;LDR R0,=RTC_BASE + RTC_CRH
- 	;MOV R2,#0
-  	;BL waitRTC
-   	;BL set_pin
+	;Enabling Alarm Interrupt
+	LDR R0,=RTC_BASE + RTC_CRH
+ 	MOV R2,#1
+  	BL waitRTC
+   	BL set_pin
+	
+	;Clearing Alarm
+	LDR R0,=RTC_BASE + RTC_CRL
+ 	MOV R2,#1
+  	BL waitRTC
+   	BL reset_pin
 	
 	;Clearing Seconds Flag
 	LDR R0,=RTC_BASE + RTC_CRL
