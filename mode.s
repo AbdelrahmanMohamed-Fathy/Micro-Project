@@ -166,6 +166,14 @@ DRAW_ALARM_MODE FUNCTION
     BL DRAW_TIME
     BL DRAW_NIGHT
     BL DRAW_ALARM
+	
+	
+	LDR R0,=GPIOB_BASE + GPIOx_ODR
+	MOV R2,#14
+	CMP R12,#1
+	BLEQ set_pin
+	
+	
     POP {R0-R12, PC}
     ENDFUNC
 
@@ -270,4 +278,30 @@ DRAW_LOOP
 
 END_DRAW
     POP {R0-R12, PC}
+	
+	
+set_pin 
+	; address in R0
+	; pin location in R2
+	PUSH {R0-R3, LR}
+	LDR R1, [R0]
+	MOV R3, #1
+	LSL R3, R3, R2
+	ORR R1, R3, R1
+	STR R1, [R0]
+	POP {R0-R3, PC}
+
+reset_pin
+	; address in R0
+	; pin location in R2
+	PUSH {R0-R3, LR}
+	LDR R1, [R0]
+	MOV R3, #1
+	LSL R3, R3, R2
+	MVN R3, R3
+	AND R1, R1, R3
+	STR R1, [R0]
+	POP {R0-R3, PC}
+	
+	
     END
