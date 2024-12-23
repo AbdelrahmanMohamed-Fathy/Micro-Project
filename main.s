@@ -3,6 +3,8 @@
 	IMPORT RTC_INIT
 	IMPORT SENSOR_INIT
 	IMPORT TIM2_INIT
+	IMPORT RTC_READ
+	IMPORT SET_ALARM
 	
 	IMPORT GET_MODE
 	IMPORT GET_CONFIG
@@ -20,11 +22,15 @@
 	; R9 current mode (0 - Clock, 1 - Alarm, 2 - Timer)
 	; R10 specifies whether to draw or not #1 means draw, #0 means don't draw
 __main FUNCTION
-	MOV R0, #100; 
+	BL SETUP
+	BL RTC_READ
+	ADD R2,#120
+	BL SET_ALARM
+	MOV R0, #100 
 	MOV R1, #0
 	MOV R9, #0 
 	MOV R10,#1
-	BL SETUP
+	
 main_loop
 	BL DRAW_CURRENT_MODE
 	BL UPDATE_CURRENT_MODE
