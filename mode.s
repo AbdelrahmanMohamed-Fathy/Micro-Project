@@ -47,8 +47,8 @@ GET_CONFIG FUNCTION
     AND R2, R2, #1
 
     CMP R2, #1
-    MOV R1, #0
-    MOVEQ R1, #1
+    ADDEQ R1, R1, #1
+    AND R1, R1, #1
 
     POP {R0, R2-R8, R11-R12, PC}
     ENDFUNC
