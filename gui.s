@@ -7,6 +7,7 @@
 	IMPORT DIGIT_TO_ASCII
 	IMPORT DRAW_MONTH
 	IMPORT DRAW_DAY
+	IMPORT DELAY
 
 	EXPORT DRAW_TIME
 	EXPORT ERASE_TIME
@@ -74,12 +75,19 @@ ERASE_TIME FUNCTION
 ERASE_COLON FUNCTION
 	;R8: Day:1 Night:0 Input
 	PUSH {R0-R12,LR}
-	MOV R0,#Time_pos_x + (Char_big_size_x*2)
-	MOV R1,#Time_pos_y
-	MOV R3,#Time_pos_x + (Char_big_size_x*3)
-	MOV R4,#Time_pos_y + Char_big_size_y - 15
+	MOV R0, #Time_pos_x + (Char_big_size_x*2)
+	MOV R1, #Time_pos_y + 15
+	MOV R3, #Time_pos_x + (Char_big_size_x*3)
+	MOV R4, #Time_pos_y + Char_big_size_y - 15
 	BL SET_COLOR
 	BL DRAW_RECTANGLE_FILLED
+	LDR R11, =2000000
+    BL DELAY 
+	;Drawing ':'
+	MOV R2,#':'
+	MOV R1, #Time_pos_y
+	MOV R10,#0xFFFF
+	BL DRAW_LARGE
 	POP {R0-R12,PC}
 	ENDFUNC
 
