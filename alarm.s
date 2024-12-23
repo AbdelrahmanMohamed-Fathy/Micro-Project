@@ -8,21 +8,33 @@
 		
 
 READ_ALARM FUNCTION
-	;R2: Returns alarm flag value in R2 
-	PUSH {R0-R1,R3-R12,LR}
+	;if you need to change either of these register change all their occurances inside this function
+	;R2: Returns alarm time value
+	;R3: Returns alarm flag value
+	PUSH {R0-R1,R4-R12,LR}
+	
+	LDR R0,=RTC_BASE + RTC_ALRH
+	LDR R2, [R0]
+	LDR R1,=0xFFFF
+	AND R2,R1
+	LSL R2,#16
+	
+	LDR R0,=RTC_BASE + RTC_ALRL
+	LDR R1, [R0]
+	ADD R2,R1
 	
 	LDR R0,=RTC_BASE + RTC_CRL
-	LDR R2, [R0]
-	AND R2,#2
-	LSR R2,#1
+	LDR R3, [R0]
+	AND R3,#2
+	LSR R3,#1
 	
-	POP {R0-R1,R3-R12,PC}
+	POP {R0-R1,R4-R12,PC}
 	ENDFUNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SET_ALARM FUNCTION
-	;R3: Number of seconds to put alarm on (Absolute value and Not Relative to current)
+	;R2: Number of seconds to put alarm on (Absolute value and Not Relative to current)
 	PUSH {R0-R12,LR}
-	
+	MOV R3,R2
 	;Enter configuration mode
 	LDR R0,=RTC_BASE + RTC_CRL
 	mov R2,#CNF
