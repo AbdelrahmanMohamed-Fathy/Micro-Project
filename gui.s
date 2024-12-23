@@ -81,7 +81,7 @@ ERASE_COLON FUNCTION
 	MOV R4, #Time_pos_y + Char_big_size_y - 15
 	BL SET_COLOR
 	BL DRAW_RECTANGLE_FILLED
-	LDR R11, =2000000
+	LDR R11, =4000000
     BL DELAY 
 	;Drawing ':'
 	MOV R2,#':'
